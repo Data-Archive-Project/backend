@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+*.env
+db.sqlite3
+
+media/
+static/
+!blog/static
+!main/static

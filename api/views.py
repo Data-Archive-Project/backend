@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from .models import *
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authtoken.models import Token
+from rest_framework import status, serializers
 
 
 @api_view(['POST'])
@@ -25,7 +27,7 @@ def login(request):
     try:
         user = User.objects.get(email=email)
     except ObjectDoesNotExist:
-        return JsonResponse(data={"login": "Invalid Email"})
+        return Response(data={"login": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
     
     # authenticate User
     user = authenticate(username=user.username, password=password)
@@ -33,12 +35,12 @@ def login(request):
     # return user's token
     if user is not None and user.is_staff == is_admin:
         token, created = Token.objects.get_or_create(user=user)
-        return JsonResponse({
+        return Response(data={
             'token': token.key,
             'user_id': user.pk,
             'email': user.email
-        })
+        }, status=status.HTTP_200_OK)
         
     else:
-        return JsonResponse(data={"login": "Invalid Password or Role"})
+        return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
 

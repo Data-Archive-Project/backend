@@ -19,8 +19,9 @@ def login(request):
     request_data = request.data
     email = request_data["email"]
     password = request_data["password"]
+    is_admin = True if request_data["is_admin"] == "true" else False
 
-    # find user
+    # find user using email
     try:
         user = User.objects.get(email=email)
     except ObjectDoesNotExist:
@@ -29,7 +30,8 @@ def login(request):
     # authenticate User
     user = authenticate(username=user.username, password=password)
 
-    if user is not None:
+    # return user's token
+    if user is not None and user.is_staff == is_admin:
         token, created = Token.objects.get_or_create(user=user)
         return JsonResponse({
             'token': token.key,
@@ -38,5 +40,5 @@ def login(request):
         })
         
     else:
-        return JsonResponse(data={"login": "Invalid Password"})
+        return JsonResponse(data={"login": "Invalid Password or Role"})
 

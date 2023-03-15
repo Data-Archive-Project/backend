@@ -9,6 +9,8 @@ from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers
+from .serializers import UserSerializer
+from django.contrib.auth.models import User
 
 
 @api_view(['POST'])
@@ -44,3 +46,13 @@ def login(request):
     else:
         return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
 
+@api_view(['GET'])
+def get_user(request, id):
+    # get user with specified id
+    try:
+        user = User.objects.get(id=id)
+    except ObjectDoesNotExist:
+        return Response(data={'error_message': 'User does not exist'}, status=status)
+    
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)

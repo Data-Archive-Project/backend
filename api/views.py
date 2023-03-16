@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
@@ -11,6 +10,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['POST'])
@@ -46,13 +47,18 @@ def login(request):
     else:
         return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
 
+
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def get_user(request, id):
-    # get user with specified id
+    """
+        Returns the User Model given the ID
+    """
     try:
         user = User.objects.get(id=id)
+        print(request.user)
     except ObjectDoesNotExist:
-        return Response(data={'error_message': 'User does not exist'}, status=status)
+        return Response(data={'error_message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
     
     serializer = UserSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)

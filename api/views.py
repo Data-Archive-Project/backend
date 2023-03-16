@@ -10,8 +10,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
+from .utils import BearerAuthentication
 
 
 @api_view(['POST'])
@@ -49,6 +50,7 @@ def login(request):
 
 
 @api_view(['GET'])
+@authentication_classes([BearerAuthentication])
 @permission_classes((IsAuthenticated, ))
 def get_user(request, id):
     """

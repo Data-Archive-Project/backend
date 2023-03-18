@@ -1,20 +1,22 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
-from drf_yasg import openapi
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
-from .models import *
-from django.contrib.auth import login, authenticate
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers
-from .serializers import *
-from django.contrib.auth.models import User
-from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from .utils import BearerAuthentication
+
+from django.contrib.auth import login, authenticate
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
+
+# drf-yasg
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
+# custom
+from .utils import BearerAuthentication
+from .serializers import *
+from .models import *
 
 @api_view(['POST'])
 @swagger_auto_schema(request_body=UserSerializer)

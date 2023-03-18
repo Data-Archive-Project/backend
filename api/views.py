@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers
-from .serializers import UserSerializer
+from .serializers import *
 from django.contrib.auth.models import User
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
@@ -22,31 +22,32 @@ def login(request):
     """
 
     # get data from request body
-    request_data = request.data
-    email = request_data["email"]
-    password = request_data["password"]
-    is_admin = True if request_data["is_admin"] == "true" else False
+    serializer = LoginSerializer(data=request.data)
 
-    # find user using email
-    try:
-        user = User.objects.get(email=email)
-    except ObjectDoesNotExist:
-        return Response(data={"login": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
-    
-    # authenticate User
-    user = authenticate(username=user.username, password=password)
+    if serializer.is_valid():
 
-    # return user's token
-    if user is not None and user.is_staff == is_admin:
-        token, created = Token.objects.get_or_create(user=user)
-        return Response(data={
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
-        }, status=status.HTTP_200_OK)
+        # find user using email
+        try:
+            user = User.objects.get(email=serializer.data['email'])
+        except ObjectDoesNotExist:
+            return Response(data={"login": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
         
-    else:
-        return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
+        # authenticate User
+        user = authenticate(username=user.username, password=serializer.data['password'])
+
+        # authenticate role and return user's token
+        if user is not None and user.is_staff == serializer.data['is_admin']:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response(data={
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email
+            }, status=status.HTTP_200_OK)
+            
+        else:
+            return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['GET'])

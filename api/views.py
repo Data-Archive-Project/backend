@@ -9,11 +9,9 @@ from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
-# drf-yasg
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-# custom
 from .utils import BearerAuthentication
 from .serializers import *
 from .models import *

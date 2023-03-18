@@ -5,3 +5,9 @@ class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = ['id', 'username','email','first_name','last_name']
+
+  
+
+class NoteSerializer(serializers.Serializer):
+  id = serializers.IntegerField()
+  text = serializers.CharField()

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
+
 class Rank(models.Model):
     name = models.CharField(max_length=100)
 
@@ -35,7 +36,7 @@ class Document(models.Model):
     description = models.TextField()
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
     file = models.FileField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="documents")
+    category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE, related_name="documents")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)

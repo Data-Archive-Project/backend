@@ -63,7 +63,6 @@ class Login(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['GET'])
 @authentication_classes([BearerAuthentication])
 # @permission_classes((IsAuthenticated, ))
@@ -78,5 +77,5 @@ def get_user(request, id: int):
     except ObjectDoesNotExist:
         return Response(data={'error_message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
     
-    serializer = UserSerializer(user)
+    serializer = UserProfileSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)

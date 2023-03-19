@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-
+from .models import *
 
 
 class LoginSerializer(serializers.Serializer):
@@ -16,5 +15,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserProfile
     fields = ['user', 'rank', 'position', 'phone']
+
+  
+
+class DocumentCategorySerializer(serializers.ModelSerializer):
+  class Meta:
+    model = DocumentCategory
+    fields = ["name", 'decription']
 
 

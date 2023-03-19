@@ -30,7 +30,6 @@ class Login(APIView):
             )
     }
 
-
     @swagger_auto_schema(request_body=LoginSerializer, responses=response_schema_dict)
     def post(self, request):
         """
@@ -81,45 +80,3 @@ def get_user(request, id: int):
     
     serializer = UserSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-# @api_view(["GET"])
-# @swagger_auto_schema(request_body=NoteSerializer)
-# def notes(request):
-#     """returns a list of notes"""
-#     note = {"id": 3, "text": "hello worl"}
-#     serializer = NoteSerializer(note)
-   
-#     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# class Notes(APIView):
-#     # response_schema_dict = {
-#     #     "200": openapi.Response(
-#     #         description="custom 200 description",
-#     #         examples={
-#     #             "application/json": {
-#     #                 "200_key1": "200_value_1",
-#     #                 "200_key2": "200_value_2",
-#     #             }
-#     #         }
-#     #     ),
-#     #     "205": openapi.Response(
-#     #         description="custom 205 description",
-#     #         examples={
-#     #             "application/json": {
-#     #                 "205_key1": "205_value_1",
-#     #                 "205_key2": "205_value_2",
-#     #             }
-#     #         }
-#     #     ),
-#     # }
-#     id_param = openapi.Parameter('num', openapi.IN_QUERY, description="test manual param", type=openapi.TYPE_BOOLEAN)
-
-#     @swagger_auto_schema(
-#         responses = response_schema_dict, manual_parameters=[id_param])
-#     def get(self, request, id=None):
-#         """returns a list of notes"""
-#         note = {"id": 3, "text": "hello world"}
-#         serializer = NoteSerializer(note)
-   
-#         return Response(serializer.data, status=status.HTTP_200_OK)

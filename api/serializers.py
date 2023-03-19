@@ -4,17 +4,17 @@ from django.contrib.auth.models import User
 
 
 class LoginSerializer(serializers.Serializer):
+  """
+    To handle data auth credentials
+  """
 	email = serializers.EmailField()
 	password = serializers.CharField()
 	is_admin = serializers.BooleanField()
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
   class Meta:
-    model = User
-    fields = ['id', 'username','email','first_name','last_name']
+    model = UserProfile
+    fields = ['user', 'rank', 'position', 'phone']
 
 
-class NoteSerializer(serializers.Serializer):
-  id = serializers.IntegerField()
-  text = serializers.CharField()

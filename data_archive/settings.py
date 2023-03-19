@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_yasg',
     
 ]
 
@@ -127,4 +128,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'api.utils.BearerAuthentication',
     ]
+}
+
+SWAGGER_SETTINGS = {
+    "DEFAULT_MODEL_RENDERING": "example"
 }

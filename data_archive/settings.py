@@ -129,3 +129,7 @@ REST_FRAMEWORK = {
         'api.utils.BearerAuthentication',
     ]
 }
+
+SWAGGER_SETTINGS = {
+    "DEFAULT_MODEL_RENDERING": "example"
+}

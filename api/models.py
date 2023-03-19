@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
-# class Role(models.Model):
+# class Rank(models.Model):
 #     name = models.CharField(max_length=100) # admin, staff, 
 
 #     def __str__(self):
@@ -18,7 +18,7 @@ from django.core.validators import RegexValidator
 #     ]
 #     title = models.CharField(max_length=255)
 #     from_ = None
-
+#     uploaded_by = None
 #     description = models.TextField()
 #     file_type = models.CharField(choices=FILE_CHOICES)
 #     file = models.FileField()
@@ -36,7 +36,7 @@ from django.core.validators import RegexValidator
 #     title = models.CharField(max_length=255) # dr, prof, mr 
 #     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,10}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
 #     phone = models.CharField(max_length=17, validators=[phone_regex], blank=True)
-#     role = model.ForeignKey(Role, on_delete=models.CASCADE)
+#     rank = model.ForeignKey(Rank, on_delete=models.CASCADE)
 #     documents = models.ManyToManyField(Document, related_name="profiles", on_delete=models.CASCADE, blank=True)
 
 #     def __str__(self):

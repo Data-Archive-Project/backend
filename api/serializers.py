@@ -14,7 +14,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_data = validated_data.pop("user")
         user = User.objects.create(**user_data)
-        user_profile = UserProfile.objects.create(user=user, **user_data)
+        user_profile = UserProfile.objects.create(user=user, **validated_data)
         return user_profile
 
 

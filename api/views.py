@@ -97,7 +97,10 @@ class UserProfileList(APIView):
     def post(self, request):
         """ Creates a new user and userprofile"""
         serializer = UserProfileSerializer(data=request.data)
+        print("dullllllllll")
         if serializer.is_valid():
+            print("d0llllllllll")
             serializer.save()
+            print("dwwwllllllllll")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

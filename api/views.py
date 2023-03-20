@@ -79,3 +79,25 @@ def get_user(request, id: int):
     
     serializer = UserProfileSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserProfileList(APIView):
+    """
+    List all UserProfiles, or create a new UserProfile.
+    """
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": UserProfileSerializer(many=True)})
+    def get(self, request):
+        user_profiles = UserProfile.objects.all()
+        serializer = UserProfileSerializer(user_profiles, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        """ Creates a new user and userprofile"""
+        serializer = UserProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

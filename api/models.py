@@ -17,50 +17,50 @@ class Position(models.Model):
         return self.name
 
 
-class DocumentCategory(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=300)
-
-    def __str__(self):
-        return self.name
-
-
-class Document(models.Model):
-    FILE_CHOICES = [
-        ("Image", "Image"),
-        ("DOC", "Word Document"),
-        ("Excel", "Excel File"),
-        ("PDF", "PDF File")
-    ]
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
-    file = models.FileField()
-    category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE, related_name="documents")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    allowed_access = models.ManyToManyField(User, related_name='documents', through='DocumentAccess')
-
-    def __str__(self):
-        return self.title
-
-
-class DocumentAccess(models.Model):
-    ACCESS_CHOICES = [
-        ('read', 'Read'),
-        ('update', 'Update'),
-    ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    access = models.CharField(max_length=10, choices=ACCESS_CHOICES)
-
-    def __str__(self):
-        return f"{self.document} ({self.access})"
-    
-    class Meta:
-        unique_together = ('document', 'user')
-
+# class DocumentCategory(models.Model):
+#     name = models.CharField(max_length=100)
+#     description = models.CharField(max_length=300)
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# class Document(models.Model):
+#     FILE_CHOICES = [
+#         ("Image", "Image"),
+#         ("DOC", "Word Document"),
+#         ("Excel", "Excel File"),
+#         ("PDF", "PDF File")
+#     ]
+#     title = models.CharField(max_length=255)
+#     description = models.TextField()
+#     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
+#     file = models.FileField()
+#     category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE, related_name="documents")
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+#     allowed_access = models.ManyToManyField(User, related_name='documents', through='DocumentAccess')
+#
+#     def __str__(self):
+#         return self.title
+#
+#
+# class DocumentAccess(models.Model):
+#     ACCESS_CHOICES = [
+#         ('read', 'Read'),
+#         ('update', 'Update'),
+#     ]
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     document = models.ForeignKey(Document, on_delete=models.CASCADE)
+#     access = models.CharField(max_length=10, choices=ACCESS_CHOICES)
+#
+#     def __str__(self):
+#         return f"{self.document} ({self.access})"
+#
+#     class Meta:
+#         unique_together = ('document', 'user')
+#
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

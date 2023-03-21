@@ -11,6 +11,18 @@ class LoginSerializer(serializers.Serializer):
     is_admin = serializers.BooleanField()
 
 
+class RankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rank
+        fields = ["id", "name"]
+
+
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ["id", "name"]
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

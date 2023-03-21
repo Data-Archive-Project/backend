@@ -2,9 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework import status, serializers
+from rest_framework import status, serializers, generics
 from rest_framework.permissions import IsAuthenticated
 
+from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
@@ -63,44 +64,97 @@ class Login(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-@authentication_classes([BearerAuthentication])
-# @permission_classes((IsAuthenticated, ))
-@swagger_auto_schema()
-def get_user(request, id: int):
+class RankList(APIView):
     """
-        Returns the User Model given the ID
-    """
-    try:
-        user = User.objects.get(id=id)
-        print(request.user)
-    except ObjectDoesNotExist:
-        return Response(data={'error_message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UserProfileList(APIView):
-    """
-    List all UserProfiles, or create a new UserProfile.
+        List all ranks, or create a new rank.
     """
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses={"200": UserProfileSerializer(many=True)})
+    @swagger_auto_schema(responses={"200": RankSerializer(many=True)})
     def get(self, request):
-        user_profiles = UserProfile.objects.all()
-        serializer = UserProfileSerializer(user_profiles, many=True)
+        ranks = Rank.objects.all()
+        serializer = RankSerializer(ranks)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer(many=True)})
     def post(self, request):
-        """ Creates a new user and userprofile"""
-        serializer = UserProfileSerializer(data=request.data)
-        print("dullllllllll")
+        serializer = RankSerializer(data=request.data)
         if serializer.is_valid():
-            print("d0llllllllll")
             serializer.save()
-            print("dwwwllllllllll")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RankDetail(APIView):
+    """
+        Retrieve, update or delete a rank instance.
+    """
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, pk):
+        try:
+            return Rank.objects.get(id=pk)
+        except Rank.DoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(responses={"200": RankSerializer()}, manual_parameters=manual_parameters)
+    def get(self, request, id, format=None):
+        """
+            Retrieve a rank instance
+        """
+        rank = self.get_object(id)
+        serializer = RankSerializer(rank)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer()}, manual_parameters=manual_parameters)
+    def put(self, request, id):
+        """
+            update a rank instance
+        """
+        rank = self.get_object(id)
+        serializer = RankSerializer(rank, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(responses={"204": None}, manual_parameters=manual_parameters)
+    def delete(self, request, id):
+        """
+            delete a rank instance
+        """
+        rank = self.get_object(id)
+        rank.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PositionList(generics.ListCreateAPIView):
+    """
+        List all positions, or creates a new position. (written using generics: abstractions go brrrrrrrrr)
+    """
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+
+
+class PositionDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Retrieve, update or delete a position instance.
+    """
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+
+
+class UserProfileList(generics.ListCreateAPIView):
+    """
+        List all positions, or creates a new position. (written using generics)
+    """
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+

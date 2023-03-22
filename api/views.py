@@ -139,6 +139,8 @@ class PositionList(generics.ListCreateAPIView):
     """
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class PositionDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -147,6 +149,8 @@ class PositionDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class UserProfileList(generics.ListCreateAPIView):
@@ -158,3 +162,12 @@ class UserProfileList(generics.ListCreateAPIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 
+
+class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Retrieve, update or delete a UserProfile instance.
+    """
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]

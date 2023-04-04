@@ -26,7 +26,7 @@ class PositionSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username']
+        fields = ['first_name', 'last_name', 'email', 'username']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user', 'rank', 'position', 'phone']
+        fields = ['user', "id", 'rank', 'position', 'phone']
 
     def create(self, validated_data):
         user_data = validated_data.pop("user")

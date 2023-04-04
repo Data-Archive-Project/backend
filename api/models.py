@@ -17,13 +17,13 @@ class Position(models.Model):
         return self.name
 
 
-# class DocumentCategory(models.Model):
-#     name = models.CharField(max_length=100)
-#     description = models.CharField(max_length=300)
-#
-#     def __str__(self):
-#         return self.name
-#
+class DocumentCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
 #
 # class Document(models.Model):
 #     FILE_CHOICES = [
@@ -41,6 +41,7 @@ class Position(models.Model):
 #     updated_at = models.DateTimeField(auto_now=True)
 #     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
 #     allowed_access = models.ManyToManyField(User, related_name='documents', through='DocumentAccess')
+#     approved = models.BooleanField(default=False)
 #
 #     def __str__(self):
 #         return self.title
@@ -60,7 +61,7 @@ class Position(models.Model):
 #
 #     class Meta:
 #         unique_together = ('document', 'user')
-#
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -71,4 +72,5 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
 

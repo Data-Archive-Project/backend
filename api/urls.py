@@ -4,8 +4,8 @@ from .views import *
 urlpatterns = [
     path("login/", Login.as_view(), name="login"),
 
-    path("users/", UserProfileList.as_view(), name="users"),
-    path("users/<int:pk>/", UserProfileDetail.as_view(), name="user"),
+    path("users/", UserList.as_view(), name="users"),
+    path("users/<int:pk>/", UserDetail.as_view(), name="user"),
 
     path("ranks/", RankList.as_view(), name='ranks'),
     path("ranks/<int:id>/", RankDetail.as_view(), name="rank"),

@@ -153,21 +153,21 @@ class PositionDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class UserProfileList(generics.ListCreateAPIView):
+class UserList(generics.ListCreateAPIView):
     """
-        List all positions, or creates a new position. (written using generics)
+        List all Users
     """
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 
 
-class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     """
-        Retrieve, update or delete a UserProfile instance.
+        Retrieve, update or delete a User instance.
     """
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]

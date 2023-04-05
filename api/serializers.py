@@ -31,7 +31,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=17, write_only=True)
+    password = serializers.CharField(max_length=17)
     profile = UserProfileSerializer()
 
     class Meta:
@@ -40,13 +40,18 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         userprofile_data = validated_data.pop("profile")
-        user = User.objects.create(**validated_data)
-        userprofile_data = UserProfile.objects.create(user=user, **userprofile_data)
-        return user
+        password = validated_data.pop("password")
 
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+
+        UserProfile.objects.create(user=user, **userprofile_data)
+        return user
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile", {})
+        password = validated_data.pop("password", None)
         # rank_data = validated_data.pop("rank", {})
         # position_data = validated_data.pop("position", {})
 
@@ -70,10 +75,13 @@ class UserSerializer(serializers.ModelSerializer):
         #         setattr(position_instance, attr, value)
         #     position_instance.save()
 
-        # Update UserProfile instance
+        # Update User instance
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+
+        if password:
+            instance.set_password(password)
 
         return instance
 

@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers, generics
@@ -8,7 +7,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema

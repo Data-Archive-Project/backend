@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class Rank(models.Model):
@@ -18,7 +20,7 @@ class Position(models.Model):
 
 
 class DocumentCategory(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=300)
 
     def __str__(self):
@@ -32,6 +34,13 @@ class Document(models.Model):
         ("excel", "Excel"),
         ("pdf", "PDF")
     ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending Approval'),
+        ('approved', 'Approved'),
+        ('no_approval', 'Needs No Approval'),
+    ]
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
@@ -41,7 +50,7 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     allowed_access = models.ManyToManyField(User, related_name='documents', through='DocumentAccess')
-    approved = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
 
     def __str__(self):
         return self.title
@@ -74,3 +83,28 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+class Comment(models.Model):
+    document = models.ForeignKey(Document, related_name='comments', on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Notification(models.Model):
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class AuditLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    action = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    changes = models.TextField()
+
+    def __str__(self):
+        return f"{self.action} on {self.content_object} at {self.timestamp}"

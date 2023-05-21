@@ -11,5 +11,8 @@ urlpatterns = [
     path("ranks/<int:id>/", RankDetail.as_view(), name="rank"),
 
     path("positions/", PositionList.as_view(), name='positions'),
-    path("positions/<int:pk>/", PositionDetail.as_view(), name="position")
+    path("positions/<int:pk>/", PositionDetail.as_view(), name="position"),
+
+    path("categories/", DocumentCategoryList.as_view(), name="categories"),
+    path("categories/<int:id>/", DocumentCategoryDetail.as_view(), name="category"),
 ]

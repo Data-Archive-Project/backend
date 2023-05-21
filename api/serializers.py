@@ -42,11 +42,14 @@ class UserSerializer(serializers.ModelSerializer):
         userprofile_data = validated_data.pop("profile")
         password = validated_data.pop("password")
 
+        # create user and set password
         user = User(**validated_data)
         user.set_password(password)
         user.save()
 
+        # create a user profile for the new user
         UserProfile.objects.create(user=user, **userprofile_data)
+
         return user
 
     def update(self, instance, validated_data):
@@ -88,9 +91,14 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class DocumentCategorySerializer(serializers.ModelSerializer):
+    num_of_docs = serializers.IntegerField(default=0, read_only=True)
 
+    class Meta:
+        model = DocumentCategory
+        fields = ['id', 'name', 'description', 'num_of_docs']
 
-# class DocumentCategorySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DocumentCategory
-#         fields = ["name", 'description']
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["num_of_docs"] = instance.documents.count()
+        return representation

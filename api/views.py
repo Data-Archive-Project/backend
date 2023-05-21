@@ -61,7 +61,6 @@ class Login(APIView):
                 return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class RankList(APIView):
     """
         List all ranks, or create a new rank.
@@ -72,7 +71,9 @@ class RankList(APIView):
     @swagger_auto_schema(responses={"200": RankSerializer(many=True)})
     def get(self, request):
         ranks = Rank.objects.all()
-        serializer = RankSerializer(ranks)
+        print(ranks)
+        serializer = RankSerializer(ranks, many=True)
+        print(serializer)
         return Response(serializer.data)
 
     @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer(many=True)})
@@ -169,3 +170,75 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
+
+
+class DocumentCategoryList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": DocumentCategorySerializer(many=True)})
+    def get(self, request):
+        categories = DocumentCategory.objects.all()
+        serializer = DocumentCategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer(many=True)})
+    def post(self, request):
+        serializer = DocumentCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_201_CREATED)
+
+
+class DocumentCategoryDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, pk):
+        """
+        get category object
+        """
+        try:
+            return DocumentCategory.objects.get(id=pk)
+        except DocumentCategory.DoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(responses={"200": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    def get(self, request, id):
+        """
+        GET a category instance
+        """
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    def patch(self, request, id):
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()},
+                         manual_parameters=manual_parameters)
+    def put(self, request, id):
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(responses={"204": None}, manual_parameters=manual_parameters)
+    def delete(self, request, id):
+        category = self.get_object(id)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -105,7 +105,9 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(read_only=True)
+    # created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Document
-        fields = []
+        fields = ['title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status"]

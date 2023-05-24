@@ -15,4 +15,7 @@ urlpatterns = [
 
     path("categories/", DocumentCategoryList.as_view(), name="categories"),
     path("categories/<int:id>/", DocumentCategoryDetail.as_view(), name="category"),
+
+    path("documents/", DocumentList.as_view(), name="documents"),
+    path("documents/<int:id>/", DocumentDetail.as_view(), name="document")
 ]

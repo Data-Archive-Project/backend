@@ -42,9 +42,9 @@ class Document(models.Model):
     ]
 
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True, default="")
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
-    file = models.FileField()
+    file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
     category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE, related_name="documents")
     created_at = models.DateTimeField(auto_now_add=True)

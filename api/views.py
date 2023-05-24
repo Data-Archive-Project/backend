@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers, generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.http import Http404
 from django.contrib.auth import login, authenticate
@@ -71,9 +72,7 @@ class RankList(APIView):
     @swagger_auto_schema(responses={"200": RankSerializer(many=True)})
     def get(self, request):
         ranks = Rank.objects.all()
-        print(ranks)
         serializer = RankSerializer(ranks, many=True)
-        print(serializer)
         return Response(serializer.data)
 
     @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer(many=True)})
@@ -242,3 +241,66 @@ class DocumentCategoryDetail(APIView):
         category = self.get_object(id)
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DocumentList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        """
+            Get a list of documents ?page=1&category=kdf&
+        """
+        documents = Document.objects.all()
+
+        # if user is staff
+        user = self.request.user
+        if user.is_staff:
+            print("staff")
+            pass
+        # filter documents by access; category can be a query parameter
+        serializer = DocumentSerializer(documents, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer(many=True)})
+    def post(self, request):
+        # Get file
+        file = request.FILES.get("file")
+
+        # GET data
+        data = request.data
+        data = request.data.copy()  # Create a copy of the request data
+
+        # Remove the 'file' key from the copied data dictionary
+        data.pop('file', None)
+
+        # serialize form data
+        serializer = DocumentSerializer(data=data)
+
+        if serializer.is_valid():
+            # Save the serializer and associate the file separately
+            document = serializer.save()
+            document.file = file
+            document.save()
+            print("yapari")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DocumentDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            Document.objects.get(pk=pk)
+        except:
+            raise Http404
+
+    def get(self, request, id):
+        pass
+
+    def delete(self, request, id):
+        pass

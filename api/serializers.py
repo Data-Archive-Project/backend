@@ -102,3 +102,10 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation["num_of_docs"] = instance.documents.count()
         return representation
+
+
+class DocumentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Document
+        fields = []

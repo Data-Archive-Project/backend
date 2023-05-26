@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
+from django.views.static import serve
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -43,6 +46,17 @@ urlpatterns = [
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
+
+
+@api_view(['GET'])
+def protected_serve(request, path, document_root=None, show_indexes=False):
+    """protects the static files from unauthenticated users"""
+    if request.user.is_authenticated:
+        return serve(request, path, document_root, show_indexes)
+    else:
+        return Response({"detail": "Not authenticated"})
+
+
 if settings.DEBUG:
     from django.conf.urls.static import static
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, protected_serve, document_root=settings.MEDIA_ROOT)

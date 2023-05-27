@@ -1,13 +1,13 @@
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from rest_framework import status, serializers
+from rest_framework import status, serializers, generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
+from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import User
 
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -62,21 +62,264 @@ class Login(APIView):
                 return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RankList(APIView):
+    """
+        List all ranks, or create a new rank.
+    """
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": RankSerializer(many=True)})
+    def get(self, request):
+        ranks = Rank.objects.all()
+        serializer = RankSerializer(ranks, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer(many=True)})
+    def post(self, request):
+        serializer = RankSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-@authentication_classes([BearerAuthentication])
-# @permission_classes((IsAuthenticated, ))
-@swagger_auto_schema()
-def get_user(request, id: int):
+class RankDetail(APIView):
     """
-        Returns the User Model given the ID
+        Retrieve, update or delete a rank instance.
     """
-    try:
-        user = User.objects.get(id=id)
-        print(request.user)
-    except ObjectDoesNotExist:
-        return Response(data={'error_message': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = UserSerializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, pk):
+        try:
+            return Rank.objects.get(id=pk)
+        except Rank.DoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(responses={"200": RankSerializer()}, manual_parameters=manual_parameters)
+    def get(self, request, id, format=None):
+        """
+            Retrieve a rank instance
+        """
+        rank = self.get_object(id)
+        serializer = RankSerializer(rank)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer()}, manual_parameters=manual_parameters)
+    def put(self, request, id):
+        """
+            update a rank instance
+        """
+        rank = self.get_object(id)
+        serializer = RankSerializer(rank, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(responses={"204": None}, manual_parameters=manual_parameters)
+    def delete(self, request, id):
+        """
+            delete a rank instance
+        """
+        rank = self.get_object(id)
+        rank.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PositionList(generics.ListCreateAPIView):
+    """
+        List all positions, or creates a new position. (written using generics: abstractions go brrrrrrrrr)
+    """
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+class PositionDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Retrieve, update or delete a position instance.
+    """
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+class UserList(generics.ListCreateAPIView):
+    """
+        List all Users
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+        Retrieve, update or delete a User instance.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+class DocumentCategoryList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": DocumentCategorySerializer(many=True)})
+    def get(self, request):
+        categories = DocumentCategory.objects.all()
+        serializer = DocumentCategorySerializer(categories, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer(many=True)})
+    def post(self, request):
+        serializer = DocumentCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_201_CREATED)
+
+
+class DocumentCategoryDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, pk):
+        """
+        get category object
+        """
+        try:
+            return DocumentCategory.objects.get(id=pk)
+        except DocumentCategory.DoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(responses={"200": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    def get(self, request, id):
+        """
+        GET a category instance
+        """
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    def patch(self, request, id):
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()},
+                         manual_parameters=manual_parameters)
+    def put(self, request, id):
+        category = self.get_object(id)
+        serializer = DocumentCategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(responses={"204": None}, manual_parameters=manual_parameters)
+    def delete(self, request, id):
+        category = self.get_object(id)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DocumentList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        """
+            Get a list of documents ?page=1&category=kdf&
+        """
+        documents = Document.objects.all()
+
+        # if user is staff
+        user = self.request.user
+        if user.is_staff:
+            print("staff")
+            pass
+        # filter documents by access; category can be a query parameter
+        serializer = DocumentSerializer(documents, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer(many=True)})
+    def post(self, request):
+        # Get file
+        file = request.FILES.get("file")
+
+        # GET data
+        data = request.data
+        data = request.data.copy()  # Create a copy of the request data
+
+        # Remove the 'file' key from the copied data dictionary
+        data.pop('file', None)
+
+        # serialize form data
+        serializer = DocumentSerializer(data=data)
+
+        if serializer.is_valid():
+            # Save the serializer and associate the file separately
+            document = serializer.save()
+            document.file = file
+            document.save()
+            print("yapari")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DocumentDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return Document.objects.get(id=pk)
+        except:
+            raise Http404
+
+    def get(self, request, id, format=None):
+        """
+        GET a Document
+        """
+        document = self.get_object(id)
+        serializer = DocumentSerializer(document)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request, id):
+        pass
+
+
+    def patch(self, request, id):
+        pass
+
+
+    def delete(self, request, id):
+        """
+        Delete a Document Instance
+        """
+        d = self.get_object(id)
+        d.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -295,12 +295,31 @@ class DocumentDetail(APIView):
 
     def get_object(self, pk):
         try:
-            Document.objects.get(pk=pk)
+            return Document.objects.get(id=pk)
         except:
             raise Http404
 
-    def get(self, request, id):
+    def get(self, request, id, format=None):
+        """
+        GET a Document
+        """
+        document = self.get_object(id)
+        serializer = DocumentSerializer(document)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request, id):
         pass
 
-    def delete(self, request, id):
+
+    def patch(self, request, id):
         pass
+
+
+    def delete(self, request, id):
+        """
+        Delete a Document Instance
+        """
+        d = self.get_object(id)
+        d.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

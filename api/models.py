@@ -108,3 +108,22 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.action} on {self.content_object} at {self.timestamp}"
+    
+
+class DocumentVersion(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='versions')
+    version_number = models.PositiveIntegerField()
+    file = models.FileField(upload_to="document_versions")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.document} - Version {self.version_number}"
+
+
+class DocumentApproval(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='approvals')
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    approved_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.document} - Approved by {self.approved_by}"

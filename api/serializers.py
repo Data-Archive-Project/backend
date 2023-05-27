@@ -110,4 +110,4 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ['title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status"]
+        fields = ['id', 'title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status"]

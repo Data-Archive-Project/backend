@@ -74,6 +74,8 @@ class DocumentAccess(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    staff_id = models.IntegerField()
+    title = models.CharField(max_length=20)
     rank = models.ForeignKey(Rank, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format: '+999999999'. Up to 15 digits allowed.")
@@ -89,12 +91,18 @@ class Comment(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Comment: {self.text[:10]}..."
+
 
 class Notification(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.message[:10]}"
 
 
 class AuditLog(models.Model):
@@ -127,3 +135,18 @@ class DocumentApproval(models.Model):
 
     def __str__(self):
         return f"{self.document} - Approved by {self.approved_by}"
+
+
+class DocumentAccessRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.document.title}"

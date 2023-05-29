@@ -26,7 +26,7 @@ class PositionSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = UserProfile
+        model = Profile
         fields = ['rank', 'position', 'phone']
 
 
@@ -95,7 +95,7 @@ class DocumentCategorySerializer(serializers.ModelSerializer):
     num_of_docs = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:
-        model = DocumentCategory
+        model = Category
         fields = ['id', 'name', 'description', 'num_of_docs']
 
     def to_representation(self, instance):

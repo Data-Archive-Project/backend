@@ -19,7 +19,7 @@ class Position(models.Model):
         return self.name
 
 
-class DocumentCategory(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=300)
 
@@ -46,8 +46,9 @@ class Document(models.Model):
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
     file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
-    category = models.ForeignKey(DocumentCategory, on_delete=models.CASCADE, related_name="documents")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="documents")
     created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     allowed_access = models.ManyToManyField(User, related_name='documents', through='DocumentAccess')
     status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
@@ -63,7 +64,7 @@ class DocumentAccess(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    access = models.CharField(max_length=10, choices=ACCESS_CHOICES)
+    access = models.CharField(max_length=10, choices=ACCESS_CHOICES, default='read')
 
     def __str__(self):
         return f"{self.document} ({self.access})"
@@ -72,7 +73,7 @@ class DocumentAccess(models.Model):
         unique_together = ('document', 'user')
 
 
-class UserProfile(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     staff_id = models.IntegerField()
     title = models.CharField(max_length=20)
@@ -128,7 +129,7 @@ class DocumentVersion(models.Model):
         return f"{self.document} - Version {self.version_number}"
 
 
-class DocumentApproval(models.Model):
+class Approval(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='approvals')
     approved_by = models.ForeignKey(User, on_delete=models.CASCADE)
     approved_at = models.DateTimeField(auto_now_add=True)
@@ -137,16 +138,23 @@ class DocumentApproval(models.Model):
         return f"{self.document} - Approved by {self.approved_by}"
 
 
-class DocumentAccessRequest(models.Model):
+class AccessRequest(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     ]
 
+    ACCESS_CHOICES = [
+        ('read', 'Read'),
+        ('update', 'Update'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    access = models.CharField(choices=ACCESS_CHOICES, max_length=20)
     status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.document.title}"

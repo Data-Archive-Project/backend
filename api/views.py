@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, serializers, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.pagination import PageNumberPagination
 
 from django.http import Http404
 from django.contrib.auth import login, authenticate
@@ -248,20 +249,32 @@ class DocumentList(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
 
+
     def get(self, request):
         """
             Get a list of documents ?page=1&category=kdf&
         """
-        documents = Document.objects.all()
 
-        # if user is staff
+        # filter documents by the user access
         user = self.request.user
-        if user.is_staff:
-            print("staff")
+        if user.profile.is_admin:
+            documents = Document.objects.all()
+        else:
             pass
-        # filter documents by access; category can be a query parameter
-        serializer = DocumentSerializer(documents, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Filter documents by category if provided as a query parameter
+        category = request.GET.get('category')
+        if category:
+            documents = documents.filter(category=category)
+
+        # Paginate the documents
+        paginator = PageNumberPagination()
+        paginated_documents = paginator.paginate_queryset(documents, request)
+
+        # Serialize the paginated documents
+        serializer = DocumentSerializer(paginated_documents, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
     @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer(many=True)})
     def post(self, request):

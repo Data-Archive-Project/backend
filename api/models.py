@@ -38,6 +38,7 @@ class Document(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending Approval'),
         ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
         ('no_approval', 'Needs No Approval'),
     ]
 
@@ -119,7 +120,7 @@ class AuditLog(models.Model):
         return f"{self.action} on {self.content_object} at {self.timestamp}"
     
 
-class DocumentVersion(models.Model):
+class Version(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='versions')
     version_number = models.PositiveIntegerField()
     file = models.FileField(upload_to="document_versions")
@@ -130,9 +131,14 @@ class DocumentVersion(models.Model):
 
 
 class Approval(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("done", "Done")
+    ]
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='approvals')
-    approved_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    approved_at = models.DateTimeField(auto_now_add=True)
+    approval_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="approvals")
+    status = models.CharField(choices=STATUS_CHOICES, max_length=25)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.document} - Approved by {self.approved_by}"

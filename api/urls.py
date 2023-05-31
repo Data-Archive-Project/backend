@@ -13,8 +13,8 @@ urlpatterns = [
     path("positions/", PositionList.as_view(), name='positions'),
     path("positions/<int:pk>/", PositionDetail.as_view(), name="position"),
 
-    path("categories/", DocumentCategoryList.as_view(), name="categories"),
-    path("categories/<int:id>/", DocumentCategoryDetail.as_view(), name="category"),
+    path("categories/", CategoryList.as_view(), name="categories"),
+    path("categories/<int:id>/", CategoryDetail.as_view(), name="category"),
 
     path("documents/", DocumentList.as_view(), name="documents"),
     path("documents/<int:id>/", DocumentDetail.as_view(), name="document")

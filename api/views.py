@@ -172,26 +172,26 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class DocumentCategoryList(APIView):
+class CategoryList(APIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses={"200": DocumentCategorySerializer(many=True)})
+    @swagger_auto_schema(responses={"200": CategorySerializer(many=True)})
     def get(self, request):
-        categories = DocumentCategory.objects.all()
-        serializer = DocumentCategorySerializer(categories, many=True)
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
-    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer(many=True)})
+    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer(many=True)})
     def post(self, request):
-        serializer = DocumentCategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_201_CREATED)
 
 
-class DocumentCategoryDetail(APIView):
+class CategoryDetail(APIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -205,33 +205,33 @@ class DocumentCategoryDetail(APIView):
         get category object
         """
         try:
-            return DocumentCategory.objects.get(id=pk)
-        except DocumentCategory.DoesNotExist:
+            return Category.objects.get(id=pk)
+        except Category.DoesNotExist:
             raise Http404
 
-    @swagger_auto_schema(responses={"200": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    @swagger_auto_schema(responses={"200": CategorySerializer()}, manual_parameters=manual_parameters)
     def get(self, request, id):
         """
         GET a category instance
         """
         category = self.get_object(id)
-        serializer = DocumentCategorySerializer(category)
+        serializer = CategorySerializer(category)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()}, manual_parameters=manual_parameters)
+    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
     def patch(self, request, id):
         category = self.get_object(id)
-        serializer = DocumentCategorySerializer(category, data=request.data, partial=True)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @swagger_auto_schema(request_body=DocumentCategorySerializer(), responses={"201": DocumentCategorySerializer()},
+    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()},
                          manual_parameters=manual_parameters)
     def put(self, request, id):
         category = self.get_object(id)
-        serializer = DocumentCategorySerializer(category, data=request.data)
+        serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

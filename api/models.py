@@ -20,11 +20,11 @@ class Position(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    tag = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=300)
 
     def __str__(self):
-        return self.name
+        return self.tag
 
 
 class Document(models.Model):
@@ -47,7 +47,7 @@ class Document(models.Model):
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
     file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="documents")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="documents", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)

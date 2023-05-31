@@ -48,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         # create a user profile for the new user
-        UserProfile.objects.create(user=user, **userprofile_data)
+        Profile.objects.create(user=user, **userprofile_data)
 
         return user
 
@@ -91,7 +91,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
-class DocumentCategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     num_of_docs = serializers.IntegerField(default=0, read_only=True)
 
     class Meta:

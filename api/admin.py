@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 
+
 class RankAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
 
@@ -14,7 +15,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'name',]
+    list_display = ['pk', 'tag',]
 
 
 class DocumentAdmin(admin.ModelAdmin):

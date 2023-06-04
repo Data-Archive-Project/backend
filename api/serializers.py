@@ -106,8 +106,24 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(serializers.ModelSerializer):
     file = serializers.FileField(read_only=True)
+    read_access = serializers.IntegerField(read_only=True)
+    update_access = serializers.IntegerField(read_only=True)
     # created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Document
-        fields = ['id', 'title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status"]
+        fields = ['id', 'title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status", "read_access", "update_access"]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Get the read permissions for the document
+        read_permissions = instance.permissions.filter(access='read').values_list('user', flat=True)
+        update_permissions = instance.permissions.filter(access='update').values_list('user', flat=True)
+        print(read_permissions)
+        print(update_permissions)
+
+        representation["read_access"] = list(read_permissions)
+        representation["update_access"] = list(update_permissions)
+
+        return representation

@@ -63,6 +63,7 @@ class Login(APIView):
                 return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RankList(APIView):
     """
         List all ranks, or create a new rank.
@@ -260,7 +261,14 @@ class DocumentList(APIView):
         if user.profile.is_admin:
             documents = Document.objects.all()
         else:
-            pass
+            documents = user.documents.all().distinct()
+            print(user)
+
+        # Search functionality
+        ...
+
+        # Sorting functionality
+        ...
 
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')
@@ -316,18 +324,24 @@ class DocumentDetail(APIView):
         """
         GET a Document
         """
+
+        # get the user
+        user = request.user
+
+        # get the document
         document = self.get_object(id)
+
+        # check if user is allowed access to the document
+        p = user.permissions.filter()
+
         serializer = DocumentSerializer(document)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     def put(self, request, id):
         pass
 
-
     def patch(self, request, id):
         pass
-
 
     def delete(self, request, id):
         """

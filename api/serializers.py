@@ -33,10 +33,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=17, write_only=True)
     is_admin = serializers.BooleanField(write_only=True)
-    profile = UserProfileSerializer()
+    # profile = UserProfileSerializer()
 
     class Meta:
         model = User
+        depth = 1
         fields = ['id', 'first_name', 'last_name', 'email', 'username', "password", "profile", "is_admin"]
 
     def create(self, validated_data):

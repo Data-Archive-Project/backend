@@ -250,7 +250,62 @@ class DocumentList(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
 
-
+    @swagger_auto_schema(operation_description="Get a list of documents", manual_parameters=[
+            openapi.Parameter(
+                name='page',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description='Page number for pagination',
+                required=False
+            ),
+            openapi.Parameter(
+                name='category',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description='Category tag to filter documents',
+                required=False
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="OK",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'count': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'next': openapi.Schema(type=openapi.TYPE_STRING),
+                        'previous': openapi.Schema(type=openapi.TYPE_STRING),
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'title': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'description': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'file_type': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'source': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'file': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'category': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'created_at': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'uploaded_by': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'status': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'read_access': openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_INTEGER)
+                                    ),
+                                    'update_access': openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_INTEGER)
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+            ),
+        },
+    )
     def get(self, request):
         """
             Get a list of documents ?page=1&category=kdf&
@@ -259,9 +314,12 @@ class DocumentList(APIView):
         # filter documents by the user access
         user = self.request.user
         if user.profile.is_admin:
+            # all documents if user is admin
             documents = Document.objects.all()
         else:
+            # only documents the user has access to
             documents = user.documents.all().distinct()
+            documents = Document.objects.all()
             print(user)
 
         # Search functionality
@@ -273,7 +331,8 @@ class DocumentList(APIView):
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')
         if category:
-            documents = documents.filter(category=category)
+            category = Category.objects.get(tag=category)
+            documents = documents.filter(category=category.id)
 
         # Paginate the documents
         paginator = PageNumberPagination()

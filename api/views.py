@@ -264,6 +264,12 @@ class DocumentList(APIView):
             documents = user.documents.all().distinct()
             print(user)
 
+        # Search functionality
+        ...
+
+        # Sorting functionality
+        ...
+
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')
         if category:

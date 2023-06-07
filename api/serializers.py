@@ -32,11 +32,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=17, write_only=True)
+    is_admin = serializers.BooleanField(write_only=True)
     profile = UserProfileSerializer()
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', "password", "profile"]
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', "password", "profile", "is_admin"]
 
     def create(self, validated_data):
         userprofile_data = validated_data.pop("profile")
@@ -96,7 +97,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'num_of_docs']
+        fields = ['id', 'tag', 'description', 'num_of_docs']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

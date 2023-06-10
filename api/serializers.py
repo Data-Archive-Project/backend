@@ -6,7 +6,7 @@ class LoginSerializer(serializers.Serializer):
     """
       To handle data auth credentials
     """
-    email = serializers.EmailField()
+    staff_id = serializers.IntegerField()
     password = serializers.CharField()
     is_admin = serializers.BooleanField()
 
@@ -27,18 +27,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['rank', 'position', 'phone']
+        fields = ['staff_id', 'rank', 'position', 'phone', 'is_admin']
 
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=17, write_only=True)
-    is_admin = serializers.BooleanField(write_only=True)
-    # profile = UserProfileSerializer()
+    profile = UserProfileSerializer()
 
     class Meta:
         model = User
-        depth = 1
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', "password", "profile", "is_admin"]
+        # depth = 1
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', "password", "profile"]
 
     def create(self, validated_data):
         userprofile_data = validated_data.pop("profile")

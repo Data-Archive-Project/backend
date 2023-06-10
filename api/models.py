@@ -76,8 +76,8 @@ class Permission(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    staff_id = models.IntegerField()
-    title = models.CharField(max_length=20)
+    staff_id = models.IntegerField(unique=True)
+    title = models.CharField(max_length=20, blank=True)
     is_admin = models.BooleanField(default=False)
     rank = models.ForeignKey(Rank, on_delete=models.CASCADE, blank=True)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, blank=True)

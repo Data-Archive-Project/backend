@@ -44,23 +44,26 @@ class Login(APIView):
 
             # find user using email
             try:
-                user = User.objects.get(email=serializer.data['email'])
+                profile = Profile.objects.get(staff_id=serializer.data['staff_id'])
+                user = profile.user
+                print(user)
             except ObjectDoesNotExist:
-                return Response(data={"login": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
+                return Response(data={"auth_error": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
             
             # authenticate User
             user = authenticate(username=user.username, password=serializer.data['password'])
 
             # authenticate role and return user's token
-            if user is not None and user.is_staff == serializer.data['is_admin']:
+            if user is not None and user.profile.is_admin == serializer.data['is_admin']:
                 token, created = Token.objects.get_or_create(user=user)
                 return Response(data={
                     'token': token.key,
                     'user_id': user.pk,
+                    'is_admin': user.profile.is_admin
                 }, status=status.HTTP_200_OK)
                 
             else:
-                return Response(data={"login": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
+                return Response(data={"auth_error": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Rank(models.Model):
@@ -76,10 +77,10 @@ class Permission(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    staff_id = models.IntegerField(unique=True)
+    staff_id = models.IntegerField(unique=True, validators=[MinValueValidator(10000000), MaxValueValidator(99999999)])
     title = models.CharField(max_length=20, blank=True)
     is_admin = models.BooleanField(default=False)
-    rank = models.ForeignKey(Rank, on_delete=models.CASCADE, blank=True)
+    rank = models.ForeignKey(Rank, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format: '+999999999'. Up to 15 digits allowed.")
     phone = models.CharField(max_length=17, validators=[phone_regex], blank=True)

@@ -140,6 +140,7 @@ class PositionList(generics.ListCreateAPIView):
     """
         List all positions, or creates a new position. (written using generics: abstractions go brrrrrrrrr)
     """
+    pagination_class = None
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
     authentication_classes = [BearerAuthentication]

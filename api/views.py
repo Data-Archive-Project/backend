@@ -348,7 +348,7 @@ class DocumentList(APIView):
 
         return paginator.get_paginated_response(serializer.data)
 
-    @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer(many=True)})
+    @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer()})
     def post(self, request):
         # Get file
         file = request.FILES.get("file")

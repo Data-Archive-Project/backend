@@ -76,9 +76,14 @@ class Permission(models.Model):
 
 
 class Profile(models.Model):
+    GENDER_CHOICES=[
+        ("female", "female"),
+        ("male", "male")
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     staff_id = models.IntegerField(unique=True, validators=[MinValueValidator(10000000), MaxValueValidator(99999999)])
     title = models.CharField(max_length=20, blank=True)
+    gender = models.CharField(max_length=25, choices=GENDER_CHOICES, blank=True)
     is_admin = models.BooleanField(default=False)
     rank = models.ForeignKey(Rank, on_delete=models.CASCADE)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, blank=True)

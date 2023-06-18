@@ -49,7 +49,7 @@ class Login(APIView):
                 print(user)
             except ObjectDoesNotExist:
                 return Response(data={"auth_error": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
-            
+
             # authenticate User
             user = authenticate(username=user.username, password=serializer.data['password'])
 
@@ -61,7 +61,7 @@ class Login(APIView):
                     'user_id': user.pk,
                     'is_admin': user.profile.is_admin
                 }, status=status.HTTP_200_OK)
-                
+
             else:
                 return Response(data={"auth_error": "Invalid Password or Role"}, status=status.HTTP_401_UNAUTHORIZED,)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -161,6 +161,7 @@ class UserList(generics.ListCreateAPIView):
     """
         List all Users
     """
+    pagination_class=None
     queryset = User.objects.all()
     serializer_class = UserSerializer
     authentication_classes = [BearerAuthentication]

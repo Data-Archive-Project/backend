@@ -48,10 +48,10 @@ class Document(models.Model):
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
     file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="documents", blank=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="documents", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploaded_by = models.ForeignKey(User, on_delete=models.PROTECT)
     allowed_access = models.ManyToManyField(User, related_name='documents', through='Permission')
     status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
 
@@ -85,8 +85,8 @@ class Profile(models.Model):
     title = models.CharField(max_length=20, blank=True)
     gender = models.CharField(max_length=25, choices=GENDER_CHOICES, blank=True)
     is_admin = models.BooleanField(default=False)
-    rank = models.ForeignKey(Rank, on_delete=models.CASCADE)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, blank=True)
+    rank = models.ForeignKey(Rank, on_delete=models.PROTECT)
+    position = models.ForeignKey(Position, on_delete=models.PROTECT, blank=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format: '+999999999'. Up to 15 digits allowed.")
     phone = models.CharField(max_length=17, validators=[phone_regex], blank=True)
 

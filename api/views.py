@@ -324,13 +324,16 @@ class DocumentList(APIView):
         else:
             # only documents the user has access to
             documents = user.documents.all().distinct()
-            documents = Document.objects.all()
+            # documents = Document.objects.all()
             print(user)
 
         # Search functionality
         ...
 
-        # Sorting functionality
+        # todo: Sorting functionality
+        ...
+
+        # todo: Filter by user_id
         ...
 
         # Filter documents by category if provided as a query parameter

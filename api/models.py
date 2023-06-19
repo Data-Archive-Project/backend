@@ -49,10 +49,12 @@ class Document(models.Model):
     file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="documents", blank=True)
+    # todo: date_received = models.DateTimeField
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.PROTECT)
     allowed_access = models.ManyToManyField(User, related_name='documents', through='Permission')
+    # todo: position_allowed_access
     status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
 
     def __str__(self):
@@ -86,7 +88,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=25, choices=GENDER_CHOICES, blank=True)
     is_admin = models.BooleanField(default=False)
     rank = models.ForeignKey(Rank, on_delete=models.PROTECT)
-    position = models.ForeignKey(Position, on_delete=models.PROTECT, blank=True)
+    position = models.ForeignKey(Position, on_delete=models.PROTECT, blank=True, null=True)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format: '+999999999'. Up to 15 digits allowed.")
     phone = models.CharField(max_length=17, validators=[phone_regex], blank=True)
 

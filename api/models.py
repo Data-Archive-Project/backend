@@ -53,28 +53,13 @@ class Document(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.PROTECT)
-    allowed_access = models.ManyToManyField(User, related_name='documents', through='Permission')
+    read_access = models.ManyToManyField(User, related_name='access_documents', blank=True)
+    update_access = models.ManyToManyField(User, related_name='update_documents', blank=True)
     # todo: position_allowed_access
     status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
 
     def __str__(self):
         return self.title
-
-
-class Permission(models.Model):
-    ACCESS_CHOICES = [
-        ('read', 'Read'),
-        ('update', 'Update'),
-    ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="permissions")
-    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="permissions")
-    access = models.CharField(max_length=10, choices=ACCESS_CHOICES, default='read')
-
-    def __str__(self):
-        return f"{self.document} ({self.access})"
-
-    class Meta:
-        unique_together = ('document', 'user', 'access')
 
 
 class Profile(models.Model):

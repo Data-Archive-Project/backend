@@ -11,7 +11,7 @@ class PositionAdmin(admin.ModelAdmin):
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'rank', 'position', 'phone']
+    list_display = ['id', 'user', 'rank', 'position', 'phone', 'is_admin']
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -20,10 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'file_type', 'source', 'status']
-
-
-class PermissionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'document', 'access']
+    filter_horizontal = ('read_access', 'update_access')
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -35,6 +32,6 @@ admin.site.register(Position, PositionAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Document, DocumentAdmin)
-admin.site.register(Permission, PermissionAdmin)
+# admin.site.register(Permission, PermissionAdmin)
 admin.site.register(Comment, CommentAdmin)
 # admin.site.register()

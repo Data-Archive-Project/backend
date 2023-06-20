@@ -107,24 +107,23 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(serializers.ModelSerializer):
     file = serializers.FileField(read_only=True)
-    read_access = serializers.IntegerField(read_only=True)
-    update_access = serializers.IntegerField(read_only=True)
-    # created_at = serializers.DateTimeField(read_only=True)
+    uploaded_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    read_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
+    update_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
 
     class Meta:
         model = Document
         fields = ['id', 'title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status", "read_access", "update_access"]
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
+    def create(self, validated_data):
+        read_access_ids = validated_data.pop('read_access', [])
+        update_access_ids = validated_data.pop('update_access', [])
 
-        # Get the read permissions for the document
-        read_permissions = instance.permissions.filter(access='read').values_list('user', flat=True)
-        update_permissions = instance.permissions.filter(access='update').values_list('user', flat=True)
-        print(read_permissions)
-        print(update_permissions)
+        # create doc
+        document = Document.objects.create(**validated_data)
 
-        representation["read_access"] = list(read_permissions)
-        representation["update_access"] = list(update_permissions)
+        # set the read and update access on the document
+        document.read_access.set(read_access_ids)
+        document.update_access.set(update_access_ids)
 
-        return representation
+        return document

@@ -272,44 +272,8 @@ class DocumentList(APIView):
             ),
         ],
         responses={
-            200: openapi.Response(
-                description="OK",
-                schema=openapi.Schema(
-                    type=openapi.TYPE_OBJECT,
-                    properties={
-                        'count': openapi.Schema(type=openapi.TYPE_INTEGER),
-                        'next': openapi.Schema(type=openapi.TYPE_STRING),
-                        'previous': openapi.Schema(type=openapi.TYPE_STRING),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'title': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'description': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'file_type': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'source': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'file': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'category': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'created_at': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'uploaded_by': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'status': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'read_access': openapi.Schema(
-                                        type=openapi.TYPE_ARRAY,
-                                        items=openapi.Schema(type=openapi.TYPE_INTEGER)
-                                    ),
-                                    'update_access': openapi.Schema(
-                                        type=openapi.TYPE_ARRAY,
-                                        items=openapi.Schema(type=openapi.TYPE_INTEGER)
-                                    ),
-                                },
-                            ),
-                        ),
-                    },
-                ),
-            ),
-        },
+            200: DocumentSerializer()
+        }
     )
     def get(self, request):
         """
@@ -323,7 +287,7 @@ class DocumentList(APIView):
             documents = Document.objects.all()
         else:
             # only documents the user has access to
-            documents = user.documents.all().distinct()
+            documents = user.access_documents.all()
             # documents = Document.objects.all()
             print(user)
 
@@ -362,6 +326,9 @@ class DocumentList(APIView):
 
         # Remove the 'file' key from the copied data dictionary
         data.pop('file', None)
+
+        # add or override 'uploaded_by'
+        data["uploaded_by"] = request.user.pk
 
         # serialize form data
         serializer = DocumentSerializer(data=data)

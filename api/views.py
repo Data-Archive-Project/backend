@@ -354,9 +354,10 @@ class DocumentDetail(APIView):
         except:
             raise Http404
 
+    @swagger_auto_schema(responses={"200": DocumentSerializer()})
     def get(self, request, id, format=None):
         """
-        GET a Document
+        Get the details of a document
         """
 
         # get the user

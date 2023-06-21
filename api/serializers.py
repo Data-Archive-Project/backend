@@ -111,7 +111,32 @@ class DocumentSerializer(serializers.ModelSerializer):
     read_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
     update_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
     position_access = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all(), many=True, required=False)
+    approver = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all(), write_only=True, required=False)
 
     class Meta:
         model = Document
-        fields = ['id', 'title', 'description', 'source', 'category', 'file_type', 'file', 'uploaded_by', "read_access", "update_access", "position_access", 'date_received', 'created_at']
+        fields = ['id', 'title', 'description', 'source', 'category', 'file_type', 'file', 'uploaded_by', "read_access", "update_access", "position_access", 'approver', 'date_received', 'created_at']
+
+    def create(self, validated_data):
+        read_access = validated_data.pop("read_access", [])
+        update_access = validated_data.pop("update_access", [])
+        position_access = validated_data.pop("position_access", [])
+        approver = validated_data.pop("approver", None)
+
+        # create document instance
+        document = Document.objects.create(**validated_data)
+
+        # add read access
+        document.read_access.set(read_access)
+
+        # add update access
+        document.update_access.set(update_access)
+
+        # add position access
+        document.position_access.set(position_access)
+
+        # add approver
+        if approver:
+            Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)
+
+        return document

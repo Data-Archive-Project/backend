@@ -15,16 +15,20 @@ class ProfileAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'tag',]
+    list_display = ['pk', 'tag']
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'file_type', 'source', 'status']
-    filter_horizontal = ('read_access', 'update_access')
+    list_display = ['id', 'title', 'file_type', 'source', 'category']
+    filter_horizontal = ('read_access', 'update_access', 'position_access')
 
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['id', 'document', 'author', 'text', 'created_at']
+
+
+class ApprovalAdmin(admin.ModelAdmin):
+    list_display = ['id', 'document', 'requester', 'approver', 'status']
 
 
 admin.site.register(Rank, RankAdmin)
@@ -34,4 +38,4 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Document, DocumentAdmin)
 # admin.site.register(Permission, PermissionAdmin)
 admin.site.register(Comment, CommentAdmin)
-# admin.site.register()
+admin.site.register(Approval, ApprovalAdmin)

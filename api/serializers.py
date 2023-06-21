@@ -110,20 +110,8 @@ class DocumentSerializer(serializers.ModelSerializer):
     uploaded_by = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     read_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
     update_access = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=True, required=False)
+    position_access = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all(), many=True, required=False)
 
     class Meta:
         model = Document
-        fields = ['id', 'title', 'description', 'file_type', 'source', 'file', 'category', 'created_at', 'uploaded_by', "status", "read_access", "update_access"]
-
-    def create(self, validated_data):
-        read_access_ids = validated_data.pop('read_access', [])
-        update_access_ids = validated_data.pop('update_access', [])
-
-        # create doc
-        document = Document.objects.create(**validated_data)
-
-        # set the read and update access on the document
-        document.read_access.set(read_access_ids)
-        document.update_access.set(update_access_ids)
-
-        return document
+        fields = ['id', 'title', 'description', 'source', 'category', 'file_type', 'file', 'uploaded_by', "read_access", "update_access", "position_access", 'date_received', 'created_at']

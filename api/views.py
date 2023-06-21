@@ -366,7 +366,17 @@ class DocumentDetail(APIView):
         document = self.get_object(id)
 
         # check if user is allowed access to the document
-        p = user.permissions.filter()
+        if user.profile.is_admin:
+            # user has access
+            serializer = DocumentSerializer(document)
+        else:
+            # user does not have access
+            if document in user.access_documents.all():
+                # user has access
+                serializer = DocumentSerializer(document)
+            else:
+                # user does not have access
+                return Response({"error": "You do not have access to this document"}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = DocumentSerializer(document)
         return Response(serializer.data, status=status.HTTP_200_OK)

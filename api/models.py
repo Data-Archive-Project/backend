@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -35,35 +36,26 @@ class Document(models.Model):
         ("excel", "Excel"),
         ("pdf", "PDF")
     ]
-
-    STATUS_CHOICES = [
-        ('pending', 'Pending Approval'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-        ('no_approval', 'Needs No Approval'),
-    ]
-
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     file_type = models.CharField(choices=FILE_CHOICES, max_length=255)
     file = models.FileField(upload_to="documents")
     source = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="documents", blank=True)
-    # todo: date_received = models.DateTimeField
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.PROTECT)
     read_access = models.ManyToManyField(User, related_name='access_documents', blank=True)
     update_access = models.ManyToManyField(User, related_name='update_documents', blank=True)
-    # todo: position_allowed_access
-    status = models.CharField(choices=STATUS_CHOICES, default='pending', max_length=20)
+    position_access = models.ManyToManyField(Position, related_name="position_documents")
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    date_received = models.DateTimeField(blank=True, null=True, default=timezone.now)
 
     def __str__(self):
         return self.title
 
 
 class Profile(models.Model):
-    GENDER_CHOICES=[
+    GENDER_CHOICES = [
         ("female", "female"),
         ("male", "male")
     ]
@@ -126,16 +118,22 @@ class Version(models.Model):
 
 class Approval(models.Model):
     STATUS_CHOICES = [
-        ("pending", "Pending"),
-        ("done", "Done")
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
     ]
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='approvals')
-    approval_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="approvals")
-    status = models.CharField(choices=STATUS_CHOICES, max_length=25)
+    requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name="approvals")
+    approver = models.ForeignKey(Position, on_delete=models.CASCADE, related_name="approvals")
+    notes = models.TextField(blank=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=25, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.document} - Approved by {self.approved_by}"
+        return f"{self.document} - Requested by {self.requester} - To be approved by f{self.approver}"
+
+    class Meta:
+        unique_together = ['document', 'requester', 'approver', 'status']
 
 
 class AccessRequest(models.Model):

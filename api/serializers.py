@@ -122,6 +122,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         update_access = validated_data.pop("update_access", [])
         position_access = validated_data.pop("position_access", [])
         approver = validated_data.pop("approver", None)
+        print(approver)
 
         # create document instance
         document = Document.objects.create(**validated_data)

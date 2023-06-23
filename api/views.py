@@ -80,7 +80,7 @@ class RankList(APIView):
         serializer = RankSerializer(ranks, many=True)
         return Response(serializer.data)
 
-    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer(many=True)})
+    @swagger_auto_schema(request_body=RankSerializer(), responses={"200": RankSerializer()})
     def post(self, request):
         serializer = RankSerializer(data=request.data)
         if serializer.is_valid():

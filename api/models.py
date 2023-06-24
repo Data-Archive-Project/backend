@@ -53,6 +53,9 @@ class Document(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class Profile(models.Model):
     GENDER_CHOICES = [
@@ -133,7 +136,7 @@ class Approval(models.Model):
         return f"{self.document} - Requested by {self.requester} - To be approved by f{self.approver}"
 
     class Meta:
-        unique_together = ['document', 'requester', 'approver', 'status']
+        unique_together = ['document', 'status']
 
 
 class AccessRequest(models.Model):

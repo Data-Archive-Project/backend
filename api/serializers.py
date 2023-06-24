@@ -117,6 +117,17 @@ class DocumentSerializer(serializers.ModelSerializer):
         model = Document
         fields = ['id', 'title', 'description', 'source', 'category', 'file_type', 'file', 'uploaded_by', "read_access", "update_access", "position_access", 'approver', 'date_received', 'created_at']
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # add something to track if document approval
+        status = None
+        if instance.approvals.all():
+            approval = instance.approvals.first()
+            status = approval.status
+        representation["approval_status"] = status
+        return representation
+
     def create(self, validated_data):
         read_access = validated_data.pop("read_access", [])
         update_access = validated_data.pop("update_access", [])

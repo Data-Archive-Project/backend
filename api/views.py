@@ -307,6 +307,7 @@ class DocumentList(APIView):
                                     ),
                                     "date_received": openapi.Schema(type=openapi.FORMAT_DATE),
                                     "created_at": openapi.Schema(type=openapi.FORMAT_DATE),
+                                    "approval_status": openapi.Schema(type=openapi.TYPE_STRING),
                                 },
                             ),
                         ),

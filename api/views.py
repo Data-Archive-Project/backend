@@ -388,6 +388,7 @@ class DocumentList(APIView):
 class DocumentDetail(APIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def get_object(self, pk):
         try:
@@ -426,8 +427,37 @@ class DocumentDetail(APIView):
     def put(self, request, id):
         pass
 
+    @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer()})
     def patch(self, request, id):
-        pass
+        document = self.get_object(id)
+
+        # Get file
+        file = request.FILES.get("file")
+
+        # GET data
+        data = request.data
+        data = request.data.copy()  # Create a copy of the request data
+
+        # Remove the 'file' key from the copied data dictionary
+        if file:
+            data.pop('file', None)
+
+        # add or override 'uploaded_by'
+        # data["uploaded_by"] = request.user.pk
+
+        # serialize form data
+        serializer = DocumentSerializer(document, data=data, partial=True)
+
+        if serializer.is_valid():
+            # Save the serializer and associate the file separately
+            document = serializer.save()
+            if file:
+                document.file = file
+                document.save()
+            print("yapari")
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
         """

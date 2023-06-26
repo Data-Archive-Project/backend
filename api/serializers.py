@@ -99,9 +99,15 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'tag', 'description', 'num_of_docs']
 
+    def get_num_of_docs(self, instance):
+        user = self.context['request'].user  # Access the current user
+        if user.profile.is_admin:
+            return instance.documents.count()
+        return instance.documents.filter(read_access=user).count()
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation["num_of_docs"] = instance.documents.count()
+        representation["num_of_docs"] = self.get_num_of_docs(instance)
         return representation
 
 

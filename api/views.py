@@ -185,7 +185,7 @@ class CategoryList(APIView):
     @swagger_auto_schema(responses={"200": CategorySerializer(many=True)})
     def get(self, request):
         categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
 
     @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer(many=True)})

@@ -424,9 +424,6 @@ class DocumentDetail(APIView):
         serializer = DocumentSerializer(document)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def put(self, request, id):
-        pass
-
     @swagger_auto_schema(request_body=DocumentSerializer(), responses={"201": DocumentSerializer()})
     def patch(self, request, id):
         document = self.get_object(id)

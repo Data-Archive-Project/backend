@@ -57,6 +57,6 @@ def protected_serve(request, path, document_root=None, show_indexes=False):
         return Response({"detail": "Not authenticated"})
 
 
-if settings.DEBUG:
-    from django.conf.urls.static import static
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG:
+#     from django.conf.urls.static import static
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -466,4 +466,7 @@ class DocumentDetail(APIView):
 
 
 def serve_file(request, file_path):
-    return FileResponse(open(file_path, 'rb'), as_attachment=True)
+    from pathlib import Path
+    project_folder = Path(__file__).parent.parent.resolve()
+    my_file = project_folder / file_path
+    return FileResponse(open(str(my_file), 'rb'), as_attachment=True)

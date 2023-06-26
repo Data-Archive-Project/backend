@@ -5,7 +5,7 @@ from rest_framework import status, serializers, generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.pagination import PageNumberPagination
-
+from django.http import FileResponse
 from django.http import Http404
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ObjectDoesNotExist
@@ -463,3 +463,7 @@ class DocumentDetail(APIView):
         d = self.get_object(id)
         d.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def serve_file(request, file_path):
+    return FileResponse(open(file_path, 'rb'), as_attachment=True)

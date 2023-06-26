@@ -17,5 +17,7 @@ urlpatterns = [
     path("categories/<int:id>/", CategoryDetail.as_view(), name="category"),
 
     path("documents/", DocumentList.as_view(), name="documents"),
-    path("documents/<int:id>/", DocumentDetail.as_view(), name="document")
+    path("documents/<int:id>/", DocumentDetail.as_view(), name="document"),
+
+    path('files/<path:file_path>/', serve_file, name='serve_file'),
 ]

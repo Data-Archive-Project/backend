@@ -347,6 +347,12 @@ class DocumentList(APIView):
             category = Category.objects.get(tag=category)
             documents = documents.filter(category=category.id)
 
+        # filter by user
+        user = request.GET.get("user")
+        if user:
+            user = User.objects.get(id=user)
+            documents = documents.filter(read_access=user)
+
         # Paginate the documents
         paginator = PageNumberPagination()
         paginated_documents = paginator.paginate_queryset(documents, request)

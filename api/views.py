@@ -351,6 +351,7 @@ class DocumentList(APIView):
         user = request.GET.get("user")
         if user:
             user = User.objects.get(id=user)
+            print(user)
             documents = documents.filter(read_access=user)
 
         # Paginate the documents

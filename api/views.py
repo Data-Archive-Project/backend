@@ -472,6 +472,32 @@ class DocumentDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ApprovalList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": ApprovalSerializer(many=True)})
+    def get(self, request):
+        if request.user.profile.is_admin:
+            approvals = Approval.objects.all()
+        elif request.user.profile.position:
+            approvals = Approval.objects.filter(approver=request.user.profile.position)
+        else: approvals = Approval.objects.all()
+
+        # filter approvals by status
+        if request.GET.get("status"):
+            filter_by = request.GET.get("status")
+            approvals.filter(status=filter_by)
+
+        serializer = ApprovalSerializer(approvals, many=True)
+
+        return Response(serializer.data)
+
+#
+# class ApprovalDetail():
+#     pass
+
+
 def serve_file(request, file_path):
     from pathlib import Path
     project_folder = Path(__file__).parent.parent.resolve()

@@ -158,3 +158,10 @@ class DocumentSerializer(serializers.ModelSerializer):
             Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)
 
         return document
+
+
+class ApprovalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Approval
+        fields = ['document', 'requester', 'approver', 'notes', 'status', 'created_at']

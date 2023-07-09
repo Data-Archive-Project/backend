@@ -486,8 +486,9 @@ class ApprovalList(APIView):
 
         # filter approvals by status
         if request.GET.get("status"):
+            print("trueeeeeee")
             filter_by = request.GET.get("status")
-            approvals.filter(status=filter_by)
+            approvals = approvals.filter(status=filter_by)
 
         serializer = ApprovalSerializer(approvals, many=True)
 

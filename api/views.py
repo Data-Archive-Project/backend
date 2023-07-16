@@ -341,6 +341,9 @@ class DocumentList(APIView):
         # todo: Filter by user_id
         ...
 
+        # todo: filter by approval status
+        ...
+
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')
         if category:
@@ -494,9 +497,30 @@ class ApprovalList(APIView):
 
         return Response(serializer.data)
 
-#
-# class ApprovalDetail():
-#     pass
+
+class ApprovalDetail():
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return Approval.objects.get(id=pk)
+        except:
+            raise Http404
+
+    @swagger_auto_schema(responses={"200": ApprovalSerializer()})
+    def patch(self, request, id):
+        approval = self.get_object(id)
+        serializer = ApprovalSerializer(approval, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    def delete(self, request, id):
+        approval = self.get_object(id)
+        approval.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 def serve_file(request, file_path):

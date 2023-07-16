@@ -20,7 +20,7 @@ urlpatterns = [
     path("documents/<int:id>/", DocumentDetail.as_view(), name="document"),
 
     path("approvals/", ApprovalList.as_view(), name="approvals"),
-    path("approval/<int:id>", ApprovalDetail.as_view(), name="approval"),
+    path("approvals/<int:id>", ApprovalDetail.as_view(), name="approval"),
 
     path('files/<path:file_path>/', serve_file, name='serve_file'),
 ]

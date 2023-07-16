@@ -498,7 +498,7 @@ class ApprovalList(APIView):
         return Response(serializer.data)
 
 
-class ApprovalDetail():
+class ApprovalDetail(APIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
 

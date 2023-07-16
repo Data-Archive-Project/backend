@@ -523,7 +523,13 @@ class ApprovalDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+# ===============================================================#
+
 def serve_file(request, file_path):
+    """
+    Serve a file from the server
+    """
     from pathlib import Path
     project_folder = Path(__file__).parent.parent.resolve()
     my_file = project_folder / file_path

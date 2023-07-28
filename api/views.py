@@ -341,6 +341,9 @@ class DocumentList(APIView):
         # todo: Filter by user_id
         ...
 
+        # todo: filter by approval status
+        ...
+
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')
         if category:
@@ -494,7 +497,6 @@ class ApprovalList(APIView):
 
         return Response(serializer.data)
 
-
 class ApprovalDetail(APIView):
     authentication_classes = [BearerAuthentication]
     permission_classes = [IsAuthenticated]
@@ -604,6 +606,9 @@ class NotificationDetail(APIView):
 
 
 def serve_file(request, file_path):
+    """
+    Serve a file from the server
+    """
     from pathlib import Path
     project_folder = Path(__file__).parent.parent.resolve()
     my_file = project_folder / file_path

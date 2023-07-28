@@ -91,6 +91,7 @@ class Notification(models.Model):
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    document = models.ForeignKey('Document', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.message[:10]}"

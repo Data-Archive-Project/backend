@@ -494,9 +494,113 @@ class ApprovalList(APIView):
 
         return Response(serializer.data)
 
-#
-# class ApprovalDetail():
-#     pass
+
+class ApprovalDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, id):
+        """
+        get category object
+        """
+        try:
+            return Approval.objects.get(id=id)
+        except ObjectDoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
+    def patch(self, request, id):
+        """
+        Partially update an approval
+        """
+        approval = self.get_object(id)
+        serializer = ApprovalSerializer(approval, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": CommentSerializer(many=True)})
+    def get(self, request):
+
+        comments = Comment.objects.all()
+
+        # filter comments by a document
+        if request.GET.get("document"):
+            filter_by = request.GET.get("document")
+            comments = Comment.objects.filter(document=int(filter_by))
+
+        serializer = CommentSerializer(comments, many=True)
+
+        return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=CommentSerializer(), responses={"201": CommentSerializer(many=True)})
+    def post(self, request):
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_201_CREATED)
+
+
+class NotificationList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": NotificationSerializer(many=True)})
+    def get(self, request):
+
+        notifications = Notification.objects.all()
+
+        # filter comments by a document
+        if request.GET.get("user"):
+            filter_by = request.GET.get("user")
+            notifications = Notification.objects.filter(receiver=int(filter_by))
+
+        serializer = NotificationSerializer(notifications, many=True)
+
+        return Response(serializer.data)
+
+
+class NotificationDetail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    # drf-yasg stuff
+    manual_parameters = [
+        openapi.Parameter(name="id", required=True, type="integer", in_=openapi.IN_PATH, description="instance id", ),
+    ]
+
+    def get_object(self, pk):
+        """
+        get category object
+        """
+        try:
+            return Notification.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            raise Http404
+
+    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
+    def patch(self, request, id):
+        """
+        Partially update a Notification ("isread" to true)
+        """
+        notification = self.get_object(id)
+        serializer = NotificationSerializer(notification, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def serve_file(request, file_path):

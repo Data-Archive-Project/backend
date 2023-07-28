@@ -31,6 +31,10 @@ class ApprovalAdmin(admin.ModelAdmin):
     list_display = ['id', 'document', 'requester', 'approver', 'status']
 
 
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'content_type', 'object_id', 'action', "timestamp"]
+
+
 admin.site.register(Rank, RankAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Profile, ProfileAdmin)
@@ -39,3 +43,4 @@ admin.site.register(Document, DocumentAdmin)
 # admin.site.register(Permission, PermissionAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Approval, ApprovalAdmin)
+admin.site.register(AuditLog, AuditLogAdmin)

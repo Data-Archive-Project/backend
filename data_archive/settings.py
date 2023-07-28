@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'api.middleware.AuditLogMiddleware'
 ]
 
 ROOT_URLCONF = 'data_archive.urls'
@@ -161,6 +162,9 @@ REST_FRAMEWORK = {
 }
 
 
+LOGIN_URL = 'api:login'
+
+
 SWAGGER_SETTINGS = {
     "DEFAULT_MODEL_RENDERING": "example",
     'SECURITY_DEFINITIONS': {
@@ -172,7 +176,7 @@ SWAGGER_SETTINGS = {
     },
     'SECURITY_REQUIREMENTS': [
         {
-            'Bearer': []
+            'Bearer': ["Bearer c5bc9f0c994e5d43e64d8b8528d3dfffa6966fc1"]
         }
     ]
 }

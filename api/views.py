@@ -42,13 +42,13 @@ class Login(APIView):
 
         if serializer.is_valid():
 
-            # find user using email
+            # find user using id
             try:
                 profile = Profile.objects.get(staff_id=serializer.data['staff_id'])
                 user = profile.user
                 print(user)
             except ObjectDoesNotExist:
-                return Response(data={"auth_error": "Invalid Email"}, status=status.HTTP_401_UNAUTHORIZED,)
+                return Response(data={"auth_error": "Invalid ID"}, status=status.HTTP_401_UNAUTHORIZED,)
 
             # authenticate User
             user = authenticate(username=user.username, password=serializer.data['password'])
@@ -515,7 +515,7 @@ class ApprovalDetail(APIView):
         except ObjectDoesNotExist:
             raise Http404
 
-    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
+    @swagger_auto_schema(request_body=ApprovalSerializer(), responses={"201": ApprovalSerializer()}, manual_parameters=manual_parameters)
     def patch(self, request, id):
         """
         Partially update an approval
@@ -592,7 +592,7 @@ class NotificationDetail(APIView):
         except ObjectDoesNotExist:
             raise Http404
 
-    @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
+    @swagger_auto_schema(request_body=NotificationSerializer(), responses={"201": NotificationSerializer()}, manual_parameters=manual_parameters)
     def patch(self, request, id):
         """
         Partially update a Notification ("isread" to true)

@@ -153,6 +153,13 @@ class DocumentSerializer(serializers.ModelSerializer):
         # add position access
         document.position_access.set(position_access)
 
+        # notifications
+        if read_access:
+            # Create notifications for read access users
+            for user in read_access:
+                message = f"You have been granted read access to the document '{document.title}'."
+                Notification.objects.create(receiver=user, message=message, document=document)
+
         # add approver
         if approver:
             Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)

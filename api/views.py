@@ -270,6 +270,13 @@ class DocumentList(APIView):
                 description='Category tag to filter documents',
                 required=False
             ),
+            openapi.Parameter(
+                name='approval_status',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description='pending, approved, rejected; filter by approval status',
+                required=False
+            ),
         ],
         responses={
             200: openapi.Response(
@@ -342,7 +349,9 @@ class DocumentList(APIView):
         ...
 
         # todo: filter by approval status
-        ...
+        status_ = request.GET.get('approval_status')
+        if status_:
+            documents = documents.approvals.filter(status=status_)
 
         # Filter documents by category if provided as a query parameter
         category = request.GET.get('category')

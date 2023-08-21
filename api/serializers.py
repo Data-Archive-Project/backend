@@ -171,7 +171,7 @@ class ApprovalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Approval
-        fields = ['document', 'requester', 'approver', 'notes', 'status', 'created_at']
+        fields = ['id', 'document', 'requester', 'approver', 'notes', 'status', 'created_at']
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -337,7 +337,13 @@ class DocumentList(APIView):
             # only documents the user has access to
             documents = user.access_documents.all()
             # documents = Document.objects.all()
+            if user.profile.position:
+                position = user.profile.position
+                position_access_documents = position.position_documents.all()
+                documents = documents | position_access_documents
             print(user)
+
+
 
         # Search functionality
         ...

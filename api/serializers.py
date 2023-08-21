@@ -139,10 +139,14 @@ class DocumentSerializer(serializers.ModelSerializer):
         update_access = validated_data.pop("update_access", [])
         position_access = validated_data.pop("position_access", [])
         approver = validated_data.pop("approver", None)
-        print(approver)
 
         # create document instance
         document = Document.objects.create(**validated_data)
+
+        # add approver
+        if approver:
+            Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)
+            position_access.append(approver)
 
         # add read access
         document.read_access.set(read_access)
@@ -160,9 +164,6 @@ class DocumentSerializer(serializers.ModelSerializer):
                 message = f"You have been granted read access to the document '{document.title}'."
                 Notification.objects.create(receiver=user, message=message, document=document)
 
-        # add approver
-        if approver:
-            Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)
 
         return document
 

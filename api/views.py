@@ -645,6 +645,71 @@ class NotificationDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+def get_documents_created_in_month(year, month):
+    documents = Document.objects.filter(
+        Q(created_at__year=year, created_at__month=month)
+    )
+    return documents
+
+
+class MonthlyArchiveAPIView(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(manual_parameters=[
+            openapi.Parameter(
+                name='year',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description='Year to filter documents',
+                required=True
+            ),
+            openapi.Parameter(
+                name='month',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_INTEGER,
+                description='Month to filter documents',
+                required=True
+            )], responses={"200": DocumentSerializer(many=True)})
+    def get(self, request):
+        year = request.query_params.get('year')
+        month = request.query_params.get('month')
+
+        if not year or not month:
+            return Response(
+                {"error": "Year and month parameters are required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            year = int(year)
+            month = int(month)
+        except ValueError:
+            return Response(
+                {"error": "Year and month must be valid integers."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        documents = get_documents_created_in_month(year, month)
+
+        # filter documents by the user access
+        user = self.request.user
+        if not user.profile.is_admin:
+            # only documents the user has access to
+            documents = None
+            read_documents = user.access_documents.all()
+            update_documents = user.update_documents.all()
+            documents = read_documents | update_documents
+            if user.profile.position:
+                position = user.profile.position
+                position_access_documents = position.position_documents.all()
+                print(position_access_documents)
+                documents = documents | position_access_documents
+
+        serializer = DocumentSerializer(documents, many=True)
+        return Response(serializer.data)
+
+
 def serve_file(request, file_path):
     """
     Serve a file from the server

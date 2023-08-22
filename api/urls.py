@@ -29,5 +29,7 @@ urlpatterns = [
     path("notifications/", NotificationList.as_view(), name="notifications"),
     path("notifications/<int:id>", NotificationDetail.as_view(), name="notification"),
 
+    path('monthly-archive/', MonthlyArchiveAPIView.as_view(), name='monthly-archive'),
+
     path('files/<path:file_path>/', serve_file, name='serve_file'),
 ]

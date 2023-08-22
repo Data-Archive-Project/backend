@@ -335,8 +335,10 @@ class DocumentList(APIView):
             documents = Document.objects.all()
         else:
             # only documents the user has access to
-            documents = user.access_documents.all()
-            # documents = Document.objects.all()
+            documents = None
+            read_documents = user.access_documents.all()
+            update_documents = user.update_documents.all()
+            documents = read_documents | update_documents
             if user.profile.position:
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()

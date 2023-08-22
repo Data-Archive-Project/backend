@@ -213,7 +213,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ["document", "author", "text", "created_at"]
+        fields = ["id", "document", "author", "text", "created_at"]
 
 
 class NotificationSerializer(serializers.ModelSerializer):

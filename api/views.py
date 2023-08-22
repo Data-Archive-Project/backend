@@ -278,6 +278,13 @@ class DocumentList(APIView):
                 description='pending, approved, rejected; filter by approval status',
                 required=False
             ),
+            openapi.Parameter(
+                name='search',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_STRING,
+                description='search query',
+                required=False
+            ),
         ],
         responses={
             200: openapi.Response(
@@ -347,11 +354,10 @@ class DocumentList(APIView):
                 documents = documents | position_access_documents
             print(user)
 
-
-
         # Search functionality
         search_query = request.GET.get('search')
         if search_query:
+            search_query = search_query.lower()
             documents = documents.filter(
                 Q(title__icontains=search_query) |
                 Q(description__icontains=search_query) |

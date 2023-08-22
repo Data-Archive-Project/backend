@@ -340,6 +340,7 @@ class DocumentList(APIView):
             if user.profile.position:
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()
+                print(position_access_documents)
                 documents = documents | position_access_documents
             print(user)
 

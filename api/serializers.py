@@ -167,6 +167,40 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         return document
 
+    def update(self, instance, validated_data):
+        read_access = validated_data.pop("read_access", [])
+        update_access = validated_data.pop("update_access", [])
+        position_access = validated_data.pop("position_access", [])
+        approver = validated_data.pop("approver", None)
+
+        # update document instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # add approver
+        if approver:
+            Approval.objects.create(document=instance, approver=approver, requester=instance.uploaded_by)
+            position_access.append(approver)
+
+        # add read access
+        instance.read_access.set(read_access)
+
+        # add update access
+        instance.update_access.set(update_access)
+
+        # add position access
+        instance.position_access.set(position_access)
+
+        # notifications
+        if read_access:
+            # Create notifications for read access users
+            for user in read_access:
+                message = f"You have been granted read access to the document '{instance.title}'."
+                Notification.objects.create(receiver=user, message=message, document=instance)
+
+        return instance
+
 
 class ApprovalSerializer(serializers.ModelSerializer):
 

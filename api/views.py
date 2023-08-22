@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -349,7 +350,13 @@ class DocumentList(APIView):
 
 
         # Search functionality
-        ...
+        search_query = request.GET.get('search')
+        if search_query:
+            documents = documents.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(source__icontains=search_query)
+            )
 
         # todo: Sorting functionality
         ...

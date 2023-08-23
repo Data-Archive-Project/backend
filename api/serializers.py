@@ -148,7 +148,7 @@ class DocumentSerializer(serializers.ModelSerializer):
             Approval.objects.create(document=document, approver=approver, requester=document.uploaded_by)
             position_access.append(approver)
             message = f"Document Approval Request: '{document.title}'"
-            Notification.objects.create(receiver=approver, message=message, document=document)
+            Notification.objects.create(receiver=approver.profile.user, message=message, document=document)
 
         # add read access
         document.read_access.set(read_access)
@@ -174,10 +174,9 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         if position_access:
             # Create notifications for position access users
-            for user in position_access:
+            for position in position_access:
                 message = f"You have been granted access to the document '{document.title}'."
-                Notification.objects.create(receiver=user, message=message, document=document)
-
+                Notification.objects.create(receiver=position.profile.user, message=message, document=document)
 
         return document
 

@@ -68,7 +68,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=25, choices=GENDER_CHOICES, blank=True)
     is_admin = models.BooleanField(default=False)
     rank = models.ForeignKey(Rank, on_delete=models.PROTECT)
-    position = models.ForeignKey(Position, on_delete=models.PROTECT, blank=True, null=True)
+    position = models.OneToOneField(Position, on_delete=models.PROTECT, blank=True, null=True, related_name="profile")
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format: '+999999999'. Up to 15 digits allowed.")
     phone = models.CharField(max_length=17, validators=[phone_regex], blank=True)
 

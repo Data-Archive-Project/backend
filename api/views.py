@@ -350,7 +350,7 @@ class DocumentList(APIView):
             print(f"update_documents: {update_documents}")
 
             # add read and update documents to the documents queryset
-            documents = read_documents + update_documents
+            documents = read_documents | update_documents
 
             # make sure there are no duplicates
             documents = documents.distinct()

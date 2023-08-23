@@ -704,7 +704,7 @@ class MonthlyArchiveAPIView(APIView):
             pass
         else:
             # filter documents by the user access
-            documents = documents.filter(Q(created_by=user.pk) | Q(read_access__in=[user.pk]))
+            documents = documents.filter(Q(read_access__in=[user.pk]) | Q(update_access__in=[user.pk]))
 
         serializer = DocumentSerializer(documents, many=True)
         return Response(serializer.data)

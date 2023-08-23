@@ -359,6 +359,7 @@ class DocumentList(APIView):
                 documents = documents | position_access_documents
             print(user)
 
+
         # make sure there are no duplicates
         documents = documents.distinct()
         print(documents)
@@ -420,6 +421,10 @@ class DocumentList(APIView):
 
         # add or override 'uploaded_by'
         data["uploaded_by"] = request.user.pk
+
+        # automatically add uploader to read and update access
+        data["read_access"] = [request.user.pk]
+        data["update_access"] = [request.user.pk]
 
         # serialize form data
         serializer = DocumentSerializer(data=data)

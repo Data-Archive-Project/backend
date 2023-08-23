@@ -602,12 +602,10 @@ class NotificationList(APIView):
     @swagger_auto_schema(responses={"200": NotificationSerializer(many=True)})
     def get(self, request):
 
-        notifications = Notification.objects.all()
+        user = request.user
 
-        # filter comments by a document
-        if request.GET.get("user"):
-            filter_by = request.GET.get("user")
-            notifications = Notification.objects.filter(receiver=int(filter_by))
+        # filter notifications by a user
+        notifications = Notification.objects.filter(receiver=user.pk)
 
         serializer = NotificationSerializer(notifications, many=True)
 

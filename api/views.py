@@ -700,17 +700,11 @@ class MonthlyArchiveAPIView(APIView):
 
         # filter documents by the user access
         user = self.request.user
-        if not user.profile.is_admin:
-            # only documents the user has access to
-            documents = None
-            read_documents = user.access_documents.all()
-            update_documents = user.update_documents.all()
-            documents = read_documents | update_documents
-            if user.profile.position:
-                position = user.profile.position
-                position_access_documents = position.position_documents.all()
-                print(position_access_documents)
-                documents = documents | position_access_documents
+        if user.profile.is_admin:
+            pass
+        else:
+            # filter documents by the user access
+            documents = documents.filter(Q(created_by=user.pk) | Q(read_access__in=[user.pk]))
 
         serializer = DocumentSerializer(documents, many=True)
         return Response(serializer.data)

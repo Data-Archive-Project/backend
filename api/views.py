@@ -354,6 +354,8 @@ class DocumentList(APIView):
                 documents = documents | position_access_documents
             print(user)
 
+        print(documents)
+
         # Search functionality
         search_query = request.GET.get('search')
         if search_query:

@@ -45,7 +45,7 @@ class Document(models.Model):
     uploaded_by = models.ForeignKey(User, on_delete=models.PROTECT)
     read_access = models.ManyToManyField(User, related_name='access_documents', blank=True)
     update_access = models.ManyToManyField(User, related_name='update_documents', blank=True)
-    position_access = models.ManyToManyField(Position, related_name="position_documents")
+    position_access = models.ManyToManyField(Position, related_name="position_documents", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     date_received = models.DateTimeField(blank=True, null=True, default=timezone.now)

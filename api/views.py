@@ -414,17 +414,12 @@ class DocumentList(APIView):
 
         # GET data
         data = request.data
-        data = request.data.copy()  # Create a copy of the request data
 
         # Remove the 'file' key from the copied data dictionary
         data.pop('file', None)
 
         # add or override 'uploaded_by'
         data["uploaded_by"] = request.user.pk
-
-        # automatically add uploader to read and update access
-        data["read_access"] = [request.user.pk]
-        data["update_access"] = [request.user.pk]
 
         # serialize form data
         serializer = DocumentSerializer(data=data)

@@ -150,6 +150,10 @@ class DocumentSerializer(serializers.ModelSerializer):
             message = f"Document Approval Request: '{document.title}'"
             Notification.objects.create(receiver=approver.profile.user, message=message, document=document)
 
+        # automatically add the uploaded_by user to the read_access list
+        read_access.append(document.uploaded_by)
+        update_access.append(document.uploaded_by)
+
         # add read access
         document.read_access.set(read_access)
 

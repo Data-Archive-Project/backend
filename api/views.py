@@ -352,9 +352,6 @@ class DocumentList(APIView):
             # add read and update documents to the documents queryset
             documents = read_documents | update_documents
 
-            # make sure there are no duplicates
-            documents = documents.distinct()
-
             if user.profile.position:
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()
@@ -362,6 +359,8 @@ class DocumentList(APIView):
                 documents = documents | position_access_documents
             print(user)
 
+        # make sure there are no duplicates
+        documents = documents.distinct()
         print(documents)
 
         # Search functionality

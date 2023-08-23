@@ -347,6 +347,7 @@ class DocumentList(APIView):
             read_documents = user.access_documents.all()
             update_documents = user.update_documents.all()
             documents = read_documents | update_documents
+            print(documents)
             if user.profile.position:
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()

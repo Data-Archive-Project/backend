@@ -348,7 +348,12 @@ class DocumentList(APIView):
             print(f"read_documents: {read_documents}")
             update_documents = user.update_documents.all()
             print(f"update_documents: {update_documents}")
-            documents = read_documents | update_documents
+
+            # add read and update documents to the documents queryset
+            documents = read_documents + update_documents
+
+            # make sure there are no duplicates
+            documents = documents.distinct()
 
             if user.profile.position:
                 position = user.profile.position

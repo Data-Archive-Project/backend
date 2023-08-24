@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from .email import send_notification_email
 
 
 class LoginSerializer(serializers.Serializer):
@@ -182,6 +183,13 @@ class DocumentSerializer(serializers.ModelSerializer):
                 message = f"You have been granted access to the document '{document.title}'."
                 Notification.objects.create(receiver=position.profile.user, message=message, document=document)
 
+        # combine all access users and send email
+        position_users = [position.profile.user for position in position_access]
+        all_access_users = read_access + update_access + position_users
+        all_access_users = list(set(all_access_users))
+        all_emails = [user.email for user in all_access_users]
+        send_notification_email(all_emails, document.title, document.description, document.uploaded_by.first_name, document.uploaded_by.last_name)
+
         return document
 
     def update(self, instance, validated_data):
@@ -214,7 +222,28 @@ class DocumentSerializer(serializers.ModelSerializer):
             # Create notifications for read access users
             for user in read_access:
                 message = f"You have been granted read access to the document '{instance.title}'."
-                Notification.objects.create(receiver=user, message=message, document=instance)
+                try:
+                    Notification.objects.create(receiver=user, message=message, document=instance)
+                except:
+                    continue
+
+        if update_access:
+            # Create notifications for update access users
+            for user in update_access:
+                message = f"You have been granted update access to the document '{instance.title}'."
+                try:
+                    Notification.objects.create(receiver=user, message=message, document=instance)
+                except:
+                    continue
+
+        if position_access:
+            # Create notifications for position access users
+            for position in position_access:
+                message = f"You have been granted access to the document '{instance.title}'."
+                try:
+                    Notification.objects.create(receiver=position.profile.user, message=message, document=instance)
+                except:
+                    continue
 
         return instance
 

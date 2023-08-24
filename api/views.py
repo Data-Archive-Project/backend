@@ -395,8 +395,12 @@ class DocumentList(APIView):
         user = request.GET.get("user")
         if user:
             user = User.objects.get(id=user)
-            print(user)
-            documents = documents.filter(read_access=user)
+            # filter by user in read_access, update_access, position_access
+            documents = documents.filter(
+                Q(read_access=user) |
+                Q(update_access=user) |
+                Q(position_access=user.profile.position)
+            )
 
         # Paginate the documents
         paginator = PageNumberPagination()
@@ -413,10 +417,11 @@ class DocumentList(APIView):
         file = request.FILES.get("file")
 
         # GET data
-        data = request.data
+        data = request.POST.copy()
 
         # Remove the 'file' key from the copied data dictionary
-        data.pop('file', None)
+        data.pop("file", None)
+
 
         # add or override 'uploaded_by'
         data["uploaded_by"] = request.user.pk

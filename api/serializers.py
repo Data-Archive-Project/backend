@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import serializers
 from .models import *
 from .email import send_notification_email
@@ -224,7 +225,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                 message = f"You have been granted read access to the document '{instance.title}'."
                 try:
                     Notification.objects.create(receiver=user, message=message, document=instance)
-                except:
+                except IntegrityError:
                     continue
 
         if update_access:
@@ -233,7 +234,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                 message = f"You have been granted update access to the document '{instance.title}'."
                 try:
                     Notification.objects.create(receiver=user, message=message, document=instance)
-                except:
+                except IntegrityError:
                     continue
 
         if position_access:
@@ -242,7 +243,7 @@ class DocumentSerializer(serializers.ModelSerializer):
                 message = f"You have been granted access to the document '{instance.title}'."
                 try:
                     Notification.objects.create(receiver=position.profile.user, message=message, document=instance)
-                except:
+                except IntegrityError:
                     continue
 
         return instance

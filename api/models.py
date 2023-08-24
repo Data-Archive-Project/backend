@@ -88,13 +88,10 @@ class Comment(models.Model):
 
 class Notification(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField(max_length=300)
+    message = models.CharField(max_length=300)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     document = models.ForeignKey('Document', on_delete=models.CASCADE, null=True, blank=True)
-
-    class Meta:
-        unique_together = ('receiver', 'message', 'document')
 
     def __str__(self):
         return f"{self.message[:10]}"

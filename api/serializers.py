@@ -268,3 +268,10 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = "__all__"
+
+
+class EmailSerializer(serializers.Serializer):
+    subject = serializers.CharField()
+    message = serializers.CharField()
+    recipient = serializers.EmailField()
+    document_id = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all(), required=False)

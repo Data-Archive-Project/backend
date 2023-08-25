@@ -31,5 +31,7 @@ urlpatterns = [
 
     path('monthly-archive/', MonthlyArchiveAPIView.as_view(), name='monthly-archive'),
 
+    path("email/", SendEmail.as_view(), name="email"),
+
     path('files/<path:file_path>/', serve_file, name='serve_file'),
 ]

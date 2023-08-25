@@ -17,6 +17,7 @@ from drf_yasg.utils import swagger_auto_schema
 from .utils import BearerAuthentication
 from .serializers import *
 from .models import *
+from .email import send_document_email
 
 
 class Login(APIView):
@@ -722,3 +723,28 @@ def serve_file(request, file_path):
     project_folder = Path(__file__).parent.parent.resolve()
     my_file = project_folder / file_path
     return FileResponse(open(str(my_file), 'rb'), as_attachment=True)
+
+
+class SendEmail(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(request_body=EmailSerializer(), responses={"201": EmailSerializer()})
+    def post(self, request):
+
+        user = request.user
+
+        serializer = EmailSerializer(data=request.data)
+        if serializer.is_valid():
+            recipient = serializer.data.get('recipient')
+            subject = serializer.data.get('subject')
+            message = serializer.data.get('message')
+            document_id = serializer.data.get('document_id')
+
+            file = Document.objects.get(id=document_id)
+            file_path = file.file.path
+
+            send_document_email(recipient, subject, message, user.email, file_path)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_201_CREATED)

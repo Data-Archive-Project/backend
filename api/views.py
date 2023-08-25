@@ -736,7 +736,7 @@ class SendEmail(APIView):
 
         serializer = EmailSerializer(data=request.data)
         if serializer.is_valid():
-            recipient = serializer.data.get('recipient')
+            recipients = serializer.data.get('recipients')
             subject = serializer.data.get('subject')
             message = serializer.data.get('message')
             document_id = serializer.data.get('document_id')
@@ -744,7 +744,7 @@ class SendEmail(APIView):
             file = Document.objects.get(id=document_id)
             file_path = file.file.path
 
-            send_document_email(recipient, subject, message, user.email, file_path)
+            send_document_email(recipients, subject, message, user.email, file_path)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_201_CREATED)

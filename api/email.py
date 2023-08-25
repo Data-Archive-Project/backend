@@ -15,7 +15,7 @@ def send_notification_email(recipients, title, description, first_name, last_nam
     send_mail(subject, plain_message, sender_email, recipient_list, html_message=html_message)
 
 
-def send_document_email(recipient, subject, message, sender, file_path):
+def send_document_email(recipients, subject, message, sender, file_path):
     # Generate the HTML message from a template
     html_message = render_to_string('emails/document.html', {'message': message})
     plain_message = strip_tags(html_message)  # Convert HTML to plain text for non-HTML email clients
@@ -27,7 +27,7 @@ def send_document_email(recipient, subject, message, sender, file_path):
         subject=subject,
         body=plain_message,  # Plain text version of the email
         from_email=sender_email,
-        to=[recipient],
+        to=list(recipients),
     )
 
     # Attach the HTML content as an alternative content type

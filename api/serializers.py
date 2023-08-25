@@ -273,5 +273,5 @@ class NotificationSerializer(serializers.ModelSerializer):
 class EmailSerializer(serializers.Serializer):
     subject = serializers.CharField()
     message = serializers.CharField()
-    recipient = serializers.EmailField()
+    recipients = serializers.ListSerializer(child=serializers.EmailField())
     document_id = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all(), required=False)

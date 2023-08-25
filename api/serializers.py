@@ -136,6 +136,11 @@ class DocumentSerializer(serializers.ModelSerializer):
         if instance.approvals.all():
             approval = instance.approvals.first()
             status = approval.status
+
+        # add document versions
+        versions = instance.versions.all()
+        representation["versions"] = VersionSerializer(versions, many=True).data
+
         representation["approval_status"] = status
         return representation
 
@@ -147,6 +152,9 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         # create document instance
         document = Document.objects.create(**validated_data)
+
+        # create a document version
+        version = Version.objects.create(document=document, version_number=1, changes="Initial Upload", changed_by=document.uploaded_by)
 
         # add approver
         if approver:
@@ -278,3 +286,10 @@ class EmailSerializer(serializers.Serializer):
     message = serializers.CharField()
     recipients = serializers.ListSerializer(child=serializers.EmailField())
     document_id = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all(), required=False)
+
+
+class VersionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Version
+        fields = ["document", "version_number", "changes", "changed_by", "created_at"]

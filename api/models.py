@@ -116,7 +116,8 @@ class AuditLog(models.Model):
 class Version(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='versions')
     version_number = models.PositiveIntegerField()
-    file = models.FileField(upload_to="document_versions")
+    changes = models.TextField()
+    changed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

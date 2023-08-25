@@ -39,6 +39,10 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display = ['id', 'receiver', 'message', 'document', 'created_at']
 
 
+class VersionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'document', 'version_number', 'changes', 'changed_by', 'created_at']
+
+
 admin.site.register(Rank, RankAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Profile, ProfileAdmin)
@@ -49,3 +53,4 @@ admin.site.register(Comment, CommentAdmin)
 admin.site.register(Approval, ApprovalAdmin)
 admin.site.register(AuditLog, AuditLogAdmin)
 admin.site.register(Notification, NotificationAdmin)
+admin.site.register(Version, VersionAdmin)

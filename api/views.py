@@ -496,6 +496,8 @@ class DocumentDetail(APIView):
         # add or override 'uploaded_by'
         # data["uploaded_by"] = request.user.pk
 
+        changes = data.get("changes")
+
         # serialize form data
         serializer = DocumentSerializer(document, data=data, partial=True)
 
@@ -505,6 +507,14 @@ class DocumentDetail(APIView):
             if file:
                 document.file = file
                 document.save()
+                if changes:
+                    # create a document version
+                    version = Version.objects.create(document=document, version_number=document.versions.count() + 1,
+                                                     changes=changes, changed_by=document.uploaded_by)
+                else:
+                    # create a document version
+                    version = Version.objects.create(document=document, version_number=document.versions.count() + 1,
+                                                     changes="No Changes Specified", changed_by=document.uploaded_by)
             print("yapari")
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -654,6 +664,25 @@ class NotificationDetail(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VersionList(APIView):
+    authentication_classes = [BearerAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(responses={"200": VersionSerializer(many=True)})
+    def get(self, request):
+
+        versions = Version.objects.all()
+
+        # filter versions by a document
+        if request.GET.get("document"):
+            filter_by = request.GET.get("document")
+            versions = Version.objects.filter(document=int(filter_by))
+
+        serializer = VersionSerializer(versions, many=True)
+
+        return Response(serializer.data)
 
 
 def get_documents_created_in_month(year, month):

@@ -422,7 +422,6 @@ class DocumentList(APIView):
         # Remove the 'file' key from the copied data dictionary
         data.pop("file", None)
 
-
         # add or override 'uploaded_by'
         data["uploaded_by"] = request.user.pk
 
@@ -468,7 +467,7 @@ class DocumentDetail(APIView):
             serializer = DocumentSerializer(document)
         else:
             # user does not have access
-            if document in user.access_documents.all():
+            if document in user.access_documents.all() or user.update_documents.all() or user.profile.position.position_documents.all():
                 # user has access
                 serializer = DocumentSerializer(document)
             else:

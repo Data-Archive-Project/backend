@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.db.models import Q
 from rest_framework import serializers
 from .models import *
 from .email import send_notification_email
@@ -105,7 +106,9 @@ class CategorySerializer(serializers.ModelSerializer):
         user = self.context['request'].user  # Access the current user
         if user.profile.is_admin:
             return instance.documents.count()
-        return instance.documents.filter(read_access=user).count()
+        # filter documents by user read access, update access and position access
+        filtered = instance.documents.filter(Q(read_access=user) | Q(update_access=user) | Q(position_access=user.profile.position))
+        return filtered.distinct().count()
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

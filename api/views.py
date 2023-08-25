@@ -192,7 +192,7 @@ class CategoryList(APIView):
 
     @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer(many=True)})
     def post(self, request):
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -223,13 +223,13 @@ class CategoryDetail(APIView):
         GET a category instance
         """
         category = self.get_object(id)
-        serializer = CategorySerializer(category)
+        serializer = CategorySerializer(category, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(request_body=CategorySerializer(), responses={"201": CategorySerializer()}, manual_parameters=manual_parameters)
     def patch(self, request, id):
         category = self.get_object(id)
-        serializer = CategorySerializer(category, data=request.data, partial=True)
+        serializer = CategorySerializer(category, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -239,7 +239,7 @@ class CategoryDetail(APIView):
                          manual_parameters=manual_parameters)
     def put(self, request, id):
         category = self.get_object(id)
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = CategorySerializer(category, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

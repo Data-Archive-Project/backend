@@ -324,6 +324,19 @@ class DocumentList(APIView):
                                     "date_received": openapi.Schema(type=openapi.FORMAT_DATE),
                                     "created_at": openapi.Schema(type=openapi.FORMAT_DATE),
                                     "approval_status": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "versions": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(
+                                            type=openapi.TYPE_OBJECT,
+                                            properties={
+                                                "document": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                                "version_number": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                                "changes": openapi.Schema(type=openapi.TYPE_STRING),
+                                                "changed_by": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                                "created_at": openapi.Schema(type=openapi.FORMAT_DATE),
+                                            },
+                                        ),
+                                    ),
                                 },
                             ),
                         ),
@@ -450,7 +463,52 @@ class DocumentDetail(APIView):
         except:
             raise Http404
 
-    @swagger_auto_schema(responses={"200": DocumentSerializer()})
+    @swagger_auto_schema(responses={
+            200: openapi.Response(
+                description="OK",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                            properties={
+                                'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'title': openapi.Schema(type=openapi.TYPE_STRING),
+                                'description': openapi.Schema(type=openapi.TYPE_STRING),
+                                'source': openapi.Schema(type=openapi.TYPE_STRING),
+                                'file_type': openapi.Schema(type=openapi.TYPE_STRING),
+                                'file': openapi.Schema(type=openapi.TYPE_STRING),
+                                'category': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'uploaded_by': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                'read_access': openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_INTEGER)
+                                ),
+                                'update_access': openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_INTEGER)
+                                ),
+                                'position_access': openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_INTEGER)
+                                ),
+                                "date_received": openapi.Schema(type=openapi.FORMAT_DATE),
+                                "created_at": openapi.Schema(type=openapi.FORMAT_DATE),
+                                "approval_status": openapi.Schema(type=openapi.TYPE_STRING),
+                                "versions": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(
+                                        type=openapi.TYPE_OBJECT,
+                                        properties={
+                                            "document": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                            "version_number": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                            "changes": openapi.Schema(type=openapi.TYPE_STRING),
+                                            "changed_by": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                            "created_at": openapi.Schema(type=openapi.FORMAT_DATE),
+                                        },
+                                    ),
+                                ),
+                            },
+                        ),
+                    ),
+    },)
     def get(self, request, id, format=None):
         """
         Get the details of a document

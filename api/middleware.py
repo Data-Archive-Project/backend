@@ -14,12 +14,12 @@ class AuditLogMiddleware:
         # Check if user is authenticated and if request method is not GET or OPTIONS
         if request.user.is_authenticated and request.method not in ('GET', 'OPTIONS'):
             user = request.user
-            content_type = 'ContentType.objects.get_for_model(request)'
+            content_type = "ContentType.objects.get_for_model(response)"
             object_id = response.id
             content_object = response
             action = request.method
             timestamp = timezone.now()
-            changes = ""
+            rationale = request.data.get('rationale')
 
             # Save the audit log
             AuditLog.objects.create(
@@ -29,7 +29,7 @@ class AuditLogMiddleware:
                 content_object=content_object,
                 action=action,
                 timestamp=timestamp,
-                changes=changes,
+                rationale=rationale,
             )
 
         return response

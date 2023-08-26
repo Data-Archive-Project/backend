@@ -61,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'api.middleware.AuditLogMiddleware'
+    # 'api.middleware.AuditLogMiddleware',
 ]
 
 ROOT_URLCONF = 'data_archive.urls'

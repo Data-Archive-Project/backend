@@ -107,7 +107,7 @@ class AuditLog(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     action = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
-    changes = models.TextField()
+    rationale = models.TextField()
 
     def __str__(self):
         return f"{self.action} on {self.content_object} at {self.timestamp}"

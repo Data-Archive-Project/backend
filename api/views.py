@@ -366,13 +366,18 @@ class DocumentList(APIView):
             # add read and update documents to the documents queryset
             documents = read_documents | update_documents
 
+            # documents the user uploaded
+            uploaded_documents = Document.objects.filter(uploaded_by=user)
+
+            # add uploaded documents to the documents queryset
+            documents = documents | uploaded_documents
+
             if user.profile.position:
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()
                 print(position_access_documents)
                 documents = documents | position_access_documents
             print(user)
-
 
         # make sure there are no duplicates
         documents = documents.distinct()

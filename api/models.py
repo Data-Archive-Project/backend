@@ -34,7 +34,9 @@ class Document(models.Model):
         ("image", "Image"),
         ("word", "Word"),
         ("excel", "Excel"),
-        ("pdf", "PDF")
+        ("pdf", "PDF"),
+        ("powerpoint", "PowerPoint"),
+        ("csv", "CSV"),
     ]
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")

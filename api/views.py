@@ -378,7 +378,7 @@ class DocumentList(APIView):
                 position_access_documents = position.position_documents.all()
 
                 # documents approved by the user
-                approved_documents = Approval.objects.filter(approved_by=user).values_list('document', flat=True)
+                approved_documents = Approval.objects.filter(approved_by=position).values_list('document', flat=True)
 
                 documents = documents | position_access_documents | approved_documents
             print(user)

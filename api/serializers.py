@@ -224,16 +224,13 @@ class DocumentSerializer(serializers.ModelSerializer):
             position_access.append(approver)
 
         # add read access
-        if read_access:
-            instance.read_access.set(read_access)
+        instance.read_access.set(read_access)
 
         # add update access
-        if update_access:
-            instance.update_access.set(update_access)
+        instance.update_access.set(update_access)
 
         # add position access
-        if position_access:
-            instance.position_access.set(position_access)
+        instance.position_access.set(position_access)
 
         # notifications
         if read_access:

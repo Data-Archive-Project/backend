@@ -162,6 +162,9 @@ class DocumentSerializer(serializers.ModelSerializer):
             position_access.append(approver)
             message = f"Document Approval Request: '{document.title}'"
             Notification.objects.create(receiver=approver.profile.user, message=message, document=document)
+            # send email to approver
+            send_notification_email([approver.profile.user.email], "Document Approval Request", document.title, document.description, document.uploaded_by.first_name,
+                                    document.uploaded_by.last_name)
 
         # # automatically add the uploaded_by user to the read_access list
         # read_access.append(document.uploaded_by)
@@ -200,7 +203,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         all_access_users = read_access + update_access + position_users
         all_access_users = list(set(all_access_users))
         all_emails = [user.email for user in all_access_users]
-        send_notification_email(all_emails, document.title, document.description, document.uploaded_by.first_name, document.uploaded_by.last_name)
+        send_notification_email(all_emails, "New Document Access",  document.title, document.description, document.uploaded_by.first_name, document.uploaded_by.last_name)
 
         return document
 

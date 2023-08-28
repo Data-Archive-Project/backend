@@ -4,10 +4,10 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 
-def send_notification_email(recipients, title, description, first_name, last_name):
+def send_notification_email(recipients, email_heading, title, description, first_name, last_name):
 
     subject = 'New Notification'
-    html_message = render_to_string('emails/notification.html', {'title': title, 'description': description, 'first_name': first_name, 'last_name': last_name})
+    html_message = render_to_string('emails/notification.html', {'email_heading': email_heading, 'title': title, 'description': description, 'first_name': first_name, 'last_name': last_name})
     plain_message = strip_tags(html_message)  # Convert HTML to plain text for non-HTML email clients
     sender_email = 'janprince002@gmail.com'  # Replace this with your email
 

@@ -369,7 +369,6 @@ class DocumentList(APIView):
             # documents the user uploaded
             uploaded_documents = Document.objects.filter(uploaded_by=user)
 
-
             # add uploaded documents to the documents queryset
             documents = documents | uploaded_documents
 
@@ -377,10 +376,10 @@ class DocumentList(APIView):
                 position = user.profile.position
                 position_access_documents = position.position_documents.all()
 
-                # documents approved by the user
-                approved_documents = Approval.objects.filter(approver=position).values_list('document', flat=True)
+                # # documents approved by the user
+                # approved_documents = Approval.objects.filter(approver=position).values_list('document', flat=True)
 
-                documents = documents | position_access_documents | approved_documents
+                documents = documents | position_access_documents
             print(user)
 
         # make sure there are no duplicates

@@ -62,9 +62,9 @@ Follow these steps to set up the backend:
 6. Create a `.env` file in the root directory of the project `data_archive/` and add the following environment variables:
 
    ```bash
-    SECRET_KEY=
+    SECRET_KEY=0%w4uxm!i($m-g=g$&5!81fr9+scd3cor*)6h6^2&wvql6yi%l
     DEBUG=True
-    DATABASE_ENGINE=django.db.backends.sqlite3
+    DATABASE_ENGINE=django.db.backends.sqlite3 #(sqlite3, mysql, postgresql, oracle) default: sqlite3 for development
     DATABASE_NAME=db
     DATABASE_USER=
     DATABASE_PASSWORD=

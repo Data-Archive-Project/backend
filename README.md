@@ -2,6 +2,9 @@
 
 This repository contains the backend code for the  Data Archive System, a project designed to manage and archive departmental records and documents efficiently. The backend is built using Django, a Python web framework.
 
+## API in Production
+The API is hosted on PythonAnywhere and can be accessed at [https://dataarchive.pythonanywhere.com/docs](https://dataarchive.pythonanywhere.com/docs)
+
 ## Table of Contents
 
 - [Getting Started](#getting-started)

@@ -19,8 +19,7 @@ To get started with the backend of the Data Archive System, follow these instruc
 - User authentication and authorization
 - Document management and version control
 - Access control with role-based permissions
-- Notification and alert system
-- Audit logging for system activity tracking
+- Email Notification and alert system
 
 ### Prerequisites
 
